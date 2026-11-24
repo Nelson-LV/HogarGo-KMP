@@ -1,0 +1,29 @@
+name: iosApp
+options:
+  bundleIdPrefix: com.hogargo
+  deploymentTarget:
+    iOS: "16.0"
+targets:
+  iosApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: iosApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.hogargo.kmp.iosApp
+        GENERATE_INFOPLIST_FILE: YES
+        INFOPLIST_KEY_UILaunchScreen_Generation: YES
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "5.0"
+        # El framework Kotlin se genera en composeApp/build/xcode-frameworks
+        FRAMEWORK_SEARCH_PATHS: "$(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)"
+        OTHER_LDFLAGS: "$(inherited) -framework ComposeApp"
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+    preBuildScripts:
+      - name: Compilar framework Kotlin
+        basedOnDependencyAnalysis: false
+        script: |
+          cd "$SRCROOT/.."
+          ./gradlew :composeApp:embedAndSignAppleFrameworkForXcode

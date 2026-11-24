@@ -1,0 +1,20 @@
+*.iml
+.gradle/
+.kotlin/
+.idea/
+.bsp/
+build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+.DS_Store
+
+# Xcode
+iosApp/*.xcodeproj/xcuserdata/
+iosApp/*.xcworkspace/xcuserdata/
+iosApp/build/
+xcuserdata/
+DerivedData/

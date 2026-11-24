@@ -1,0 +1,61 @@
+-- Esquema inicial de HogarGo KMP. Cada integrante amplia sus tablas en su rama.
+
+CREATE TABLE Expense (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    amount REAL NOT NULL,
+    category TEXT NOT NULL,
+    createdAt INTEGER NOT NULL
+);
+
+CREATE TABLE Pet (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    species TEXT NOT NULL,
+    birthDate TEXT
+);
+
+CREATE TABLE Event (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    date TEXT NOT NULL,
+    note TEXT
+);
+
+CREATE TABLE Setting (
+    key TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+selectExpenses:
+SELECT * FROM Expense ORDER BY createdAt DESC;
+
+insertExpense:
+INSERT INTO Expense(title, amount, category, createdAt) VALUES (?, ?, ?, ?);
+
+countExpenses:
+SELECT COUNT(*) FROM Expense;
+
+selectPets:
+SELECT * FROM Pet ORDER BY name;
+
+insertPet:
+INSERT INTO Pet(name, species, birthDate) VALUES (?, ?, ?);
+
+countPets:
+SELECT COUNT(*) FROM Pet;
+
+selectEvents:
+SELECT * FROM Event ORDER BY date;
+
+insertEvent:
+INSERT INTO Event(title, date, note) VALUES (?, ?, ?);
+
+countEvents:
+SELECT COUNT(*) FROM Event;
+
+selectSetting:
+SELECT value FROM Setting WHERE key = ?;
+
+upsertSetting:
+INSERT OR REPLACE INTO Setting(key, value) VALUES (?, ?);
