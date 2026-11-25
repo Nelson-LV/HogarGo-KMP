@@ -1,5 +1,6 @@
 package com.hogargo.kmp.di
 
+import com.hogargo.kmp.advice.data.DailyAdviceRepository
 import com.hogargo.kmp.calendar.CalendarRepository
 import com.hogargo.kmp.db.HogarGoDatabase
 import com.hogargo.kmp.finance.FinanceRepository
@@ -12,4 +13,5 @@ class AppModules(database: HogarGoDatabase) {
     val pet = PetRepository(database)
     val calendar = CalendarRepository(database)
     val task = TaskRepository(database)
+    val advice = DailyAdviceRepository()
 }
