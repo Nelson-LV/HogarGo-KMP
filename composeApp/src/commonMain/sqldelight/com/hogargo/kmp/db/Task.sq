@@ -23,7 +23,7 @@ SELECT COALESCE(SUM(coinReward), 0) FROM HouseholdTask WHERE householdId = ? AND
 
 completedTasks:
 SELECT * FROM HouseholdTask
-WHERE householdId = ? AND completed = 1 AND completedDate IS NOT NULL
+WHERE householdId = ? AND completed = 1
 ORDER BY completedDate, createdAt;
 
 deleteTasksByHousehold:
