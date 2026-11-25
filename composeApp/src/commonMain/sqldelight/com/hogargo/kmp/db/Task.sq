@@ -1,0 +1,30 @@
+-- Tareas del hogar. Zori y el calendario solo las LEEN (monedas y tareas completadas).
+-- El modulo de tareas es quien las crea y las completa.
+-- completedDate: fecha ISO yyyy-MM-dd; coinReward: monedas que da al completarse.
+
+CREATE TABLE HouseholdTask (
+    id TEXT NOT NULL PRIMARY KEY,
+    householdId TEXT NOT NULL,
+    title TEXT NOT NULL,
+    completed INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    completedDate TEXT,
+    coinReward INTEGER NOT NULL DEFAULT 10,
+    createdAt INTEGER NOT NULL
+);
+
+CREATE INDEX task_household ON HouseholdTask(householdId);
+
+insertTask:
+INSERT INTO HouseholdTask(id, householdId, title, completed, completedDate, coinReward, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+earnedCoins:
+SELECT COALESCE(SUM(coinReward), 0) FROM HouseholdTask WHERE householdId = ? AND completed = 1;
+
+completedTasks:
+SELECT * FROM HouseholdTask
+WHERE householdId = ? AND completed = 1 AND completedDate IS NOT NULL
+ORDER BY completedDate, createdAt;
+
+deleteTasksByHousehold:
+DELETE FROM HouseholdTask WHERE householdId = ?;

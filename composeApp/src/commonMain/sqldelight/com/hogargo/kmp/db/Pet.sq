@@ -1,0 +1,42 @@
+-- Mascota Zori: una fila de estado por hogar y una fila de ropero por (hogar, objeto).
+-- Los tiempos son milisegundos desde epoch.
+
+CREATE TABLE PetState (
+    householdId TEXT NOT NULL PRIMARY KEY,
+    happiness REAL NOT NULL,
+    satiety REAL NOT NULL,
+    careActions INTEGER NOT NULL,
+    lastFeedAt INTEGER NOT NULL,
+    lastPlayAt INTEGER NOT NULL,
+    lastDecayAt INTEGER NOT NULL
+);
+
+CREATE TABLE WardrobeItem (
+    householdId TEXT NOT NULL,
+    itemId TEXT NOT NULL,
+    owned INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    equipped INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    PRIMARY KEY (householdId, itemId)
+);
+
+petState:
+SELECT * FROM PetState WHERE householdId = ?;
+
+savePetState:
+INSERT OR REPLACE INTO PetState(householdId, happiness, satiety, careActions, lastFeedAt, lastPlayAt, lastDecayAt)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+wardrobe:
+SELECT * FROM WardrobeItem WHERE householdId = ?;
+
+seedWardrobeItem:
+INSERT OR IGNORE INTO WardrobeItem(householdId, itemId, owned, equipped) VALUES (?, ?, 0, 0);
+
+updateWardrobeItem:
+UPDATE WardrobeItem SET owned = ?, equipped = ? WHERE householdId = ? AND itemId = ?;
+
+deletePetState:
+DELETE FROM PetState WHERE householdId = ?;
+
+deleteWardrobe:
+DELETE FROM WardrobeItem WHERE householdId = ?;
