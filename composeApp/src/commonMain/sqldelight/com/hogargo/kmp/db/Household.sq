@@ -1,0 +1,124 @@
+-- Hogares, integrantes y avisos. Todo dato del hogar lleva householdId: nada es global.
+
+-- El codigo se guarda con 6 caracteres sin guion (ej. "HGR789").
+CREATE TABLE Household (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    code TEXT NOT NULL UNIQUE,
+    createdAt INTEGER NOT NULL
+);
+
+-- Integrante: uno por persona y por hogar.
+-- nameKey = nombre en minusculas (unico por hogar, se valida en el repositorio).
+-- isApproved = 0 -> solicitud de ingreso pendiente. Solo un admin por hogar.
+-- recoveryKey = SHA-256 del usuario de recuperacion normalizado ('' = sin configurar).
+-- createdAt define quien es "el mas antiguo" del hogar.
+CREATE TABLE Member (
+    id TEXT NOT NULL PRIMARY KEY,
+    householdId TEXT NOT NULL,
+    name TEXT NOT NULL,
+    nameKey TEXT NOT NULL,
+    isAdmin INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    isApproved INTEGER AS kotlin.Boolean NOT NULL DEFAULT 1,
+    recoveryKey TEXT NOT NULL DEFAULT '',
+    createdAt INTEGER NOT NULL
+);
+
+CREATE INDEX member_household ON Member(householdId);
+
+-- Aviso por destinatario. Se guarda en la misma transaccion que el cambio que lo origina.
+-- recipientNameKey permite reconocer a una persona eliminada (ya no existe su Member).
+CREATE TABLE HouseholdNotice (
+    id TEXT NOT NULL PRIMARY KEY,
+    householdId TEXT NOT NULL,
+    recipientMemberId TEXT NOT NULL,
+    recipientNameKey TEXT NOT NULL,
+    type TEXT NOT NULL,
+    arg1 TEXT NOT NULL DEFAULT '',
+    arg2 TEXT NOT NULL DEFAULT '',
+    createdAt INTEGER NOT NULL,
+    delivered INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0
+);
+
+CREATE INDEX notice_recipient ON HouseholdNotice(recipientMemberId);
+
+-- Hogares
+
+householdById:
+SELECT * FROM Household WHERE id = ?;
+
+householdByCode:
+SELECT * FROM Household WHERE code = ?;
+
+insertHousehold:
+INSERT INTO Household(id, name, code, createdAt) VALUES (?, ?, ?, ?);
+
+renameHousehold:
+UPDATE Household SET name = ? WHERE id = ?;
+
+deleteHousehold:
+DELETE FROM Household WHERE id = ?;
+
+-- Integrantes
+
+memberById:
+SELECT * FROM Member WHERE id = ?;
+
+membersByHousehold:
+SELECT * FROM Member WHERE householdId = ? ORDER BY createdAt;
+
+approvedMembersByRecoveryKey:
+SELECT * FROM Member WHERE recoveryKey = ? AND isApproved = 1 ORDER BY createdAt;
+
+insertMember:
+INSERT INTO Member(id, householdId, name, nameKey, isAdmin, isApproved, recoveryKey, createdAt)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+updateMemberName:
+UPDATE Member SET name = ?, nameKey = ? WHERE id = ?;
+
+updateRecoveryKey:
+UPDATE Member SET recoveryKey = ? WHERE id = ?;
+
+approveMember:
+UPDATE Member SET isApproved = 1 WHERE id = ?;
+
+makeAdmin:
+UPDATE Member SET isAdmin = 1 WHERE id = ?;
+
+deleteMember:
+DELETE FROM Member WHERE id = ?;
+
+deleteMembersByHousehold:
+DELETE FROM Member WHERE householdId = ?;
+
+-- Avisos
+
+insertNotice:
+INSERT INTO HouseholdNotice(id, householdId, recipientMemberId, recipientNameKey, type, arg1, arg2, createdAt, delivered)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0);
+
+noticeById:
+SELECT * FROM HouseholdNotice WHERE id = ?;
+
+pendingNotices:
+SELECT * FROM HouseholdNotice
+WHERE recipientMemberId = ? AND delivered = 0 AND type != 'REMOVED'
+ORDER BY createdAt;
+
+markNoticeDelivered:
+UPDATE HouseholdNotice SET delivered = 1 WHERE id = ?;
+
+removedNotices:
+SELECT * FROM HouseholdNotice WHERE householdId = ? AND recipientNameKey = ? AND type = 'REMOVED';
+
+deleteRemovedNotices:
+DELETE FROM HouseholdNotice WHERE householdId = ? AND recipientNameKey = ? AND type = 'REMOVED';
+
+deleteNoticesByHousehold:
+DELETE FROM HouseholdNotice WHERE householdId = ?;
+
+-- Sesion del dispositivo (usa la tabla Setting de HogarGo.sq)
+
+deleteSetting:
+DELETE FROM Setting WHERE key = ?;
