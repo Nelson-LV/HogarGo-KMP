@@ -33,6 +33,7 @@ import com.hogargo.kmp.home.HomeScreen
 import com.hogargo.kmp.home.HomeViewModel
 import com.hogargo.kmp.finance.ui.FinanceScreen
 import com.hogargo.kmp.household.HouseholdViewModel
+import com.hogargo.kmp.l10n.L10n
 import com.hogargo.kmp.pet.PetViewModel
 import com.hogargo.kmp.pet.ui.PetScreen
 import com.hogargo.kmp.household.ui.ChangeNameScreen
@@ -69,13 +70,13 @@ object Routes {
     const val RENAME_HOUSEHOLD = "profile/household-name"
 }
 
-private data class TopLevel(val route: String, val label: String, val emoji: String)
+private data class TopLevel(val route: String, val labelEs: String, val labelEn: String, val emoji: String)
 
 private val topLevelDestinations = listOf(
-    TopLevel(Routes.HOME, "Inicio", "🏠"),
-    TopLevel(Routes.FINANCE, "Finanzas", "💰"),
-    TopLevel(Routes.PETS, "Mascotas", "🐾"),
-    TopLevel(Routes.CALENDAR, "Calendario", "📅"),
+    TopLevel(Routes.HOME, "Inicio", "Home", "🏠"),
+    TopLevel(Routes.FINANCE, "Finanzas", "Finance", "💰"),
+    TopLevel(Routes.PETS, "Mascotas", "Pet", "🐾"),
+    TopLevel(Routes.CALENDAR, "Calendario", "Calendar", "📅"),
 )
 
 /** Bienvenida y hojas de acceso (sin sesion abierta). */
@@ -136,7 +137,7 @@ fun AppNavHost(modules: AppModules, householdViewModel: HouseholdViewModel, hous
                             selected = currentRoute == dest.route,
                             onClick = { navController.navigateTopLevel(dest.route) },
                             icon = { Text(dest.emoji) },
-                            label = { Text(dest.label) },
+                            label = { Text(L10n.tr(dest.labelEs, dest.labelEn)) },
                         )
                     }
                 }
