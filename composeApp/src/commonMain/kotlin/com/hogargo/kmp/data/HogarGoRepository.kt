@@ -12,8 +12,7 @@ import kotlin.time.ExperimentalTime
  * Punto unico de acceso a datos (SQLDelight). Los modulos de cada integrante
  * (finanzas, mascotas, calendario) agregan aqui sus operaciones.
  */
-class HogarGoRepository(factory: DatabaseDriverFactory) {
-    private val db = HogarGoDatabase(factory.createDriver())
+class HogarGoRepository(db: HogarGoDatabase) {
     private val q = db.hogarGoQueries
 
     val expenseCount: Flow<Long> = q.countExpenses().asFlow().mapToOne(Dispatchers.Default)

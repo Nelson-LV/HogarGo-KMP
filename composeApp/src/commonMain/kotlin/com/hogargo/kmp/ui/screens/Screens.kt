@@ -29,15 +29,6 @@ private fun ScreenColumn(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun WelcomeScreen(onStart: () -> Unit) = ScreenColumn {
-    Text("🏠", style = MaterialTheme.typography.displayLarge)
-    Text("HogarGo", style = MaterialTheme.typography.headlineLarge)
-    Text("Organiza tu hogar: finanzas, mascotas y calendario", style = MaterialTheme.typography.bodyMedium)
-    Spacer(Modifier.height(24.dp))
-    Button(onClick = onStart) { Text("Comenzar") }
-}
-
-@Composable
 fun HomeScreen(repository: HogarGoRepository, onOpenAbout: () -> Unit) = ScreenColumn {
     val expenses by repository.expenseCount.collectAsState(0L)
     val pets by repository.petCount.collectAsState(0L)

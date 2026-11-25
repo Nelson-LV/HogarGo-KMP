@@ -19,7 +19,10 @@ targets:
         SWIFT_VERSION: "5.0"
         # El framework Kotlin se genera en composeApp/build/xcode-frameworks
         FRAMEWORK_SEARCH_PATHS: "$(SRCROOT)/../composeApp/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)"
-        OTHER_LDFLAGS: "$(inherited) -framework ComposeApp"
+        # -lsqlite3: el framework estatico usa el driver nativo de SQLDelight
+        OTHER_LDFLAGS: "$(inherited) -framework ComposeApp -lsqlite3"
+        # Quita los envoltorios de sqlite3_load_extension, que el SDK de iOS ya no exporta
+        DEAD_CODE_STRIPPING: YES
         ENABLE_USER_SCRIPT_SANDBOXING: NO
     preBuildScripts:
       - name: Compilar framework Kotlin

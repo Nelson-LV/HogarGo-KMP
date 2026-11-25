@@ -18,10 +18,25 @@ iosApp/         Host SwiftUI minimo (project.yml para XcodeGen)
 | Requisito de la guia | Donde |
 |---|---|
 | Android + iOS | `androidMain`, `iosMain`, `iosApp/` |
-| >= 5 pantallas | Bienvenida, Inicio, Finanzas, Mascotas, Calendario, Acerca de |
+| >= 5 pantallas | Bienvenida, Crear/Unirse/Iniciar sesion/Recuperar codigo, Perfil, Inicio, Finanzas, Mascotas, Calendario, Acerca de |
 | Persistencia | SQLDelight (`HogarGo.sq`, `HogarGoRepository`) |
 | Navegacion compartida | `navigation/AppNavHost.kt` |
 | Descripcion y creditos | `AboutScreen` en `ui/screens/Screens.kt` |
+
+## Hogares (modulo de Isabella Romero)
+
+Port del modulo de hogares de HogarGo iOS, todo en `commonMain/.../household/`:
+
+- `data/`: esquema `Household.sq` (Household, Member, HouseholdNotice), `HouseholdRepository` con todas las reglas (crear, unirse con aprobacion, iniciar sesion por nombre o usuario de recuperacion, recuperar codigos, acciones de admin, salir con traspaso de admin), `SessionStore` (tabla `Setting`) y SHA-256 en Kotlin comun para el usuario de recuperacion.
+- `HouseholdViewModel`: sesion del dispositivo, entrega de avisos y cierre de sesion si el admin te elimina.
+- `notifications/`: avisos del hogar como notificaciones locales (`expect`/`actual`: NotificationManager en Android, UNUserNotificationCenter en iOS).
+- `ui/`: Bienvenida, Crear hogar, Unirse, Iniciar sesion, Recuperar codigo, Perfil y sus editores. Textos ES/EN con `L10n.tr(es, en)`.
+
+Todo dato del hogar lleva `householdId`. Si tu modulo guarda datos por hogar, borralos tambien en `HouseholdRepository.deleteEverything` (cuando sale la ultima persona).
+
+Pruebas: `./gradlew :composeApp:testDebugUnitTest` (reglas comunes + repositorio con SQLite en memoria).
+
+Si ya tenias instalada la version esqueleto, desinstalala antes: el esquema cambio y no hay migracion.
 
 ## Ejecutar
 
