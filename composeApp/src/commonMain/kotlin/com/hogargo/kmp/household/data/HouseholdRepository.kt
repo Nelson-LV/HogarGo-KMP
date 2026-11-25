@@ -371,10 +371,17 @@ class HouseholdRepository(
     }
 
     /**
-     * Borra el hogar con sus integrantes y avisos. Los modulos que agreguen datos
-     * por hogar (tareas, finanzas, mascota, calendario) deben borrarlos tambien aqui.
+     * Borra el hogar con sus integrantes, avisos y los datos de cada modulo
+     * (finanzas, mascota, calendario y tareas). Los modulos nuevos deben borrar los suyos aqui.
      */
     private fun deleteEverything(householdId: String) {
+        db.financeQueries.deleteExpensesByHousehold(householdId)
+        db.financeQueries.deleteGoalsByHousehold(householdId)
+        db.petQueries.deletePetState(householdId)
+        db.petQueries.deleteWardrobe(householdId)
+        db.calendarQueries.deleteBillsByHousehold(householdId)
+        db.calendarQueries.deleteEventsByHousehold(householdId)
+        db.taskQueries.deleteTasksByHousehold(householdId)
         q.deleteNoticesByHousehold(householdId)
         q.deleteMembersByHousehold(householdId)
         q.deleteHousehold(householdId)

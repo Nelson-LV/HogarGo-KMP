@@ -1,0 +1,52 @@
+-- Finanzas del hogar: gastos y metas de ahorro. Todo dato lleva householdId.
+-- Las fechas se guardan como texto ISO yyyy-MM-dd.
+
+CREATE TABLE Expense (
+    id TEXT NOT NULL PRIMARY KEY,
+    householdId TEXT NOT NULL,
+    title TEXT NOT NULL,
+    category TEXT NOT NULL,
+    amount REAL NOT NULL,
+    date TEXT NOT NULL,
+    createdAt INTEGER NOT NULL
+);
+
+CREATE INDEX expense_household ON Expense(householdId);
+
+CREATE TABLE SavingsGoal (
+    id TEXT NOT NULL PRIMARY KEY,
+    householdId TEXT NOT NULL,
+    title TEXT NOT NULL,
+    currentAmount REAL NOT NULL DEFAULT 0,
+    targetAmount REAL NOT NULL,
+    createdAt INTEGER NOT NULL
+);
+
+CREATE INDEX savings_goal_household ON SavingsGoal(householdId);
+
+expensesByHousehold:
+SELECT * FROM Expense WHERE householdId = ? ORDER BY date DESC, createdAt DESC;
+
+insertExpense:
+INSERT INTO Expense(id, householdId, title, category, amount, date, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deleteExpense:
+DELETE FROM Expense WHERE id = ? AND householdId = ?;
+
+deleteExpensesByHousehold:
+DELETE FROM Expense WHERE householdId = ?;
+
+goalsByHousehold:
+SELECT * FROM SavingsGoal WHERE householdId = ? ORDER BY createdAt, id;
+
+insertGoal:
+INSERT INTO SavingsGoal(id, householdId, title, currentAmount, targetAmount, createdAt) VALUES (?, ?, ?, 0, ?, ?);
+
+contributeToGoal:
+UPDATE SavingsGoal SET currentAmount = currentAmount + ? WHERE id = ? AND householdId = ?;
+
+deleteGoal:
+DELETE FROM SavingsGoal WHERE id = ? AND householdId = ?;
+
+deleteGoalsByHousehold:
+DELETE FROM SavingsGoal WHERE householdId = ?;

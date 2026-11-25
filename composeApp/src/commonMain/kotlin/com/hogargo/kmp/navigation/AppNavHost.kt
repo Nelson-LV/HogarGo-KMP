@@ -18,14 +18,24 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.hogargo.kmp.data.HogarGoRepository
+import com.hogargo.kmp.calendar.CalendarViewModel
+import com.hogargo.kmp.calendar.ui.CalendarScreen
+import com.hogargo.kmp.di.AppModules
+import com.hogargo.kmp.finance.FinanceViewModel
+import com.hogargo.kmp.home.HomeScreen
+import com.hogargo.kmp.home.HomeViewModel
+import com.hogargo.kmp.finance.ui.FinanceScreen
 import com.hogargo.kmp.household.HouseholdViewModel
+import com.hogargo.kmp.l10n.L10n
+import com.hogargo.kmp.pet.PetViewModel
+import com.hogargo.kmp.pet.ui.PetScreen
 import com.hogargo.kmp.household.ui.ChangeNameScreen
 import com.hogargo.kmp.household.ui.ChangeRecoveryUserScreen
 import com.hogargo.kmp.household.ui.CreateHouseholdScreen
@@ -37,13 +47,7 @@ import com.hogargo.kmp.household.ui.ProfileScreen
 import com.hogargo.kmp.household.ui.RecoverCodesScreen
 import com.hogargo.kmp.household.ui.RenameHouseholdScreen
 import com.hogargo.kmp.household.ui.WelcomeScreen
-import com.hogargo.kmp.tasks.ui.TaskViewModel
-import com.hogargo.kmp.tasks.ui.TasksScreen
 import com.hogargo.kmp.ui.screens.AboutScreen
-import com.hogargo.kmp.ui.screens.CalendarScreen
-import com.hogargo.kmp.ui.screens.FinanceScreen
-import com.hogargo.kmp.ui.screens.HomeScreen
-import com.hogargo.kmp.ui.screens.PetsScreen
 
 /** Rutas de la app. La navegacion vive 100% en commonMain. */
 object Routes {
@@ -56,7 +60,6 @@ object Routes {
 
     // Con sesion
     const val HOME = "home"
-    const val TASKS = "tasks"
     const val FINANCE = "finance"
     const val PETS = "pets"
     const val CALENDAR = "calendar"
@@ -67,14 +70,13 @@ object Routes {
     const val RENAME_HOUSEHOLD = "profile/household-name"
 }
 
-private data class TopLevel(val route: String, val label: String, val emoji: String)
+private data class TopLevel(val route: String, val labelEs: String, val labelEn: String, val emoji: String)
 
 private val topLevelDestinations = listOf(
-    TopLevel(Routes.HOME, "Inicio", "🏠"),
-    TopLevel(Routes.TASKS, "Tareas", "📝"),
-    TopLevel(Routes.FINANCE, "Finanzas", "💰"),
-    TopLevel(Routes.PETS, "Mascotas", "🐾"),
-    TopLevel(Routes.CALENDAR, "Calendario", "📅"),
+    TopLevel(Routes.HOME, "Inicio", "Home", "🏠"),
+    TopLevel(Routes.FINANCE, "Finanzas", "Finance", "💰"),
+    TopLevel(Routes.PETS, "Mascotas", "Pet", "🐾"),
+    TopLevel(Routes.CALENDAR, "Calendario", "Calendar", "📅"),
 )
 
 /** Bienvenida y hojas de acceso (sin sesion abierta). */
@@ -105,11 +107,7 @@ fun WelcomeNavHost(viewModel: HouseholdViewModel) {
 /** App con sesion abierta: pestanas, Acerca de y Perfil. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavHost(
-    repository: HogarGoRepository,
-    householdViewModel: HouseholdViewModel,
-    taskViewModel: TaskViewModel,
-) {
+fun AppNavHost(modules: AppModules, householdViewModel: HouseholdViewModel, householdId: String) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -139,7 +137,7 @@ fun AppNavHost(
                             selected = currentRoute == dest.route,
                             onClick = { navController.navigateTopLevel(dest.route) },
                             icon = { Text(dest.emoji) },
-                            label = { Text(dest.label) },
+                            label = { Text(L10n.tr(dest.labelEs, dest.labelEn)) },
                         )
                     }
                 }
@@ -149,17 +147,26 @@ fun AppNavHost(
         NavHost(
             navController = navController,
             startDestination = Routes.HOME,
+            // Las pantallas internas (Perfil) traen su propia barra: no repetir el espacio del sistema.
             modifier = Modifier.padding(padding).consumeWindowInsets(padding),
         ) {
             composable(Routes.HOME) {
-                HomeScreen(repository, taskViewModel, onOpenAbout = { navController.navigate(Routes.ABOUT) })
+                HomeScreen(
+                    viewModel(key = "home-$householdId") {
+                        HomeViewModel(modules.finance, modules.calendar, modules.pet, householdId)
+                    },
+                    onOpenAbout = { navController.navigate(Routes.ABOUT) },
+                )
             }
-            composable(Routes.TASKS) {
-                TasksScreen(taskViewModel, householdViewModel)
+            composable(Routes.FINANCE) {
+                FinanceScreen(viewModel(key = "finance-$householdId") { FinanceViewModel(modules.finance, householdId) })
             }
-            composable(Routes.FINANCE) { FinanceScreen(repository) }
-            composable(Routes.PETS) { PetsScreen(repository) }
-            composable(Routes.CALENDAR) { CalendarScreen(repository) }
+            composable(Routes.PETS) {
+                PetScreen(viewModel(key = "pet-$householdId") { PetViewModel(modules.pet, householdId) })
+            }
+            composable(Routes.CALENDAR) {
+                CalendarScreen(viewModel(key = "calendar-$householdId") { CalendarViewModel(modules.calendar, householdId) })
+            }
             composable(Routes.ABOUT) { AboutScreen(onBack = { navController.popBackStack() }) }
 
             composable(Routes.PROFILE) {

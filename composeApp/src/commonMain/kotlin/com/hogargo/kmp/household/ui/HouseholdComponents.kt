@@ -45,6 +45,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -58,6 +59,7 @@ object HogarGoColors {
     val surface = Color.White
     val surfaceContainer = Color(0xFFFCEAE2)
     val surfaceContainerLow = Color(0xFFFFF1EB)
+    val brandOrange = Color(0xFFFEAC67)
     val primaryText = Color(0xFF7A3E1D)
     val secondaryText = Color(0xFF8C7468)
     val brandOrangeContainer = Color(0xFFFFDBC9)
@@ -75,6 +77,9 @@ enum class HogarFieldKind {
     /** Sin autocapitalizacion ni autocorreccion. */
     RECOVERY_USER,
     CODE,
+
+    /** Importes: teclado decimal. */
+    AMOUNT,
 }
 
 /** Campo con etiqueta, error en vivo y texto de ayuda. */
@@ -103,7 +108,9 @@ fun HogarTextField(
                     HogarFieldKind.NAME -> KeyboardCapitalization.Words
                     HogarFieldKind.RECOVERY_USER -> KeyboardCapitalization.None
                     HogarFieldKind.CODE -> KeyboardCapitalization.Characters
+                    HogarFieldKind.AMOUNT -> KeyboardCapitalization.None
                 },
+                keyboardType = if (kind == HogarFieldKind.AMOUNT) KeyboardType.Decimal else KeyboardType.Text,
                 autoCorrectEnabled = kind == HogarFieldKind.NAME,
             ),
             colors = OutlinedTextFieldDefaults.colors(

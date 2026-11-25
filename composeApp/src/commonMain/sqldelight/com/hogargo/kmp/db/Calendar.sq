@@ -1,0 +1,56 @@
+-- Calendario del hogar: facturas y eventos. Las fechas son texto ISO yyyy-MM-dd.
+-- timeLabel es opcional y va en 24 h ("HH:mm").
+
+CREATE TABLE Bill (
+    id TEXT NOT NULL PRIMARY KEY,
+    householdId TEXT NOT NULL,
+    title TEXT NOT NULL,
+    amount REAL NOT NULL,
+    dueDate TEXT NOT NULL,
+    paid INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    createdAt INTEGER NOT NULL
+);
+
+CREATE INDEX bill_household ON Bill(householdId);
+
+CREATE TABLE CalendarEvent (
+    id TEXT NOT NULL PRIMARY KEY,
+    householdId TEXT NOT NULL,
+    title TEXT NOT NULL,
+    date TEXT NOT NULL,
+    timeLabel TEXT,
+    done INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    createdAt INTEGER NOT NULL
+);
+
+CREATE INDEX event_household ON CalendarEvent(householdId);
+
+billsByHousehold:
+SELECT * FROM Bill WHERE householdId = ? ORDER BY dueDate, createdAt;
+
+insertBill:
+INSERT INTO Bill(id, householdId, title, amount, dueDate, paid, createdAt) VALUES (?, ?, ?, ?, ?, 0, ?);
+
+setBillPaid:
+UPDATE Bill SET paid = ? WHERE id = ? AND householdId = ?;
+
+deleteBill:
+DELETE FROM Bill WHERE id = ? AND householdId = ?;
+
+deleteBillsByHousehold:
+DELETE FROM Bill WHERE householdId = ?;
+
+eventsByHousehold:
+SELECT * FROM CalendarEvent WHERE householdId = ? ORDER BY date, timeLabel, createdAt;
+
+insertEvent:
+INSERT INTO CalendarEvent(id, householdId, title, date, timeLabel, done, createdAt) VALUES (?, ?, ?, ?, ?, 0, ?);
+
+setEventDone:
+UPDATE CalendarEvent SET done = ? WHERE id = ? AND householdId = ?;
+
+deleteEvent:
+DELETE FROM CalendarEvent WHERE id = ? AND householdId = ?;
+
+deleteEventsByHousehold:
+DELETE FROM CalendarEvent WHERE householdId = ?;
