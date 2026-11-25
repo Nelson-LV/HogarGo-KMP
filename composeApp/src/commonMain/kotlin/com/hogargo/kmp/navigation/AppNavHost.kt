@@ -25,6 +25,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.hogargo.kmp.calendar.CalendarViewModel
+import com.hogargo.kmp.calendar.ui.CalendarScreen
 import com.hogargo.kmp.di.AppModules
 import com.hogargo.kmp.finance.FinanceViewModel
 import com.hogargo.kmp.finance.ui.FinanceScreen
@@ -43,7 +45,6 @@ import com.hogargo.kmp.household.ui.RecoverCodesScreen
 import com.hogargo.kmp.household.ui.RenameHouseholdScreen
 import com.hogargo.kmp.household.ui.WelcomeScreen
 import com.hogargo.kmp.ui.screens.AboutScreen
-import com.hogargo.kmp.ui.screens.ComingSoonScreen
 import com.hogargo.kmp.ui.screens.HomeScreen
 
 /** Rutas de la app. La navegacion vive 100% en commonMain. */
@@ -156,7 +157,9 @@ fun AppNavHost(modules: AppModules, householdViewModel: HouseholdViewModel, hous
             composable(Routes.PETS) {
                 PetScreen(viewModel(key = "pet-$householdId") { PetViewModel(modules.pet, householdId) })
             }
-            composable(Routes.CALENDAR) { ComingSoonScreen("Calendario") }
+            composable(Routes.CALENDAR) {
+                CalendarScreen(viewModel(key = "calendar-$householdId") { CalendarViewModel(modules.calendar, householdId) })
+            }
             composable(Routes.ABOUT) { AboutScreen(onBack = { navController.popBackStack() }) }
 
             composable(Routes.PROFILE) {
