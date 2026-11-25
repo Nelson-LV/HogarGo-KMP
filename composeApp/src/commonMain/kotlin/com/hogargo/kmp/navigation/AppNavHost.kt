@@ -29,6 +29,8 @@ import com.hogargo.kmp.di.AppModules
 import com.hogargo.kmp.finance.FinanceViewModel
 import com.hogargo.kmp.finance.ui.FinanceScreen
 import com.hogargo.kmp.household.HouseholdViewModel
+import com.hogargo.kmp.pet.PetViewModel
+import com.hogargo.kmp.pet.ui.PetScreen
 import com.hogargo.kmp.household.ui.ChangeNameScreen
 import com.hogargo.kmp.household.ui.ChangeRecoveryUserScreen
 import com.hogargo.kmp.household.ui.CreateHouseholdScreen
@@ -151,7 +153,9 @@ fun AppNavHost(modules: AppModules, householdViewModel: HouseholdViewModel, hous
             composable(Routes.FINANCE) {
                 FinanceScreen(viewModel(key = "finance-$householdId") { FinanceViewModel(modules.finance, householdId) })
             }
-            composable(Routes.PETS) { ComingSoonScreen("Mascota") }
+            composable(Routes.PETS) {
+                PetScreen(viewModel(key = "pet-$householdId") { PetViewModel(modules.pet, householdId) })
+            }
             composable(Routes.CALENDAR) { ComingSoonScreen("Calendario") }
             composable(Routes.ABOUT) { AboutScreen(onBack = { navController.popBackStack() }) }
 
