@@ -18,12 +18,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.hogargo.kmp.di.AppModules
+import com.hogargo.kmp.finance.FinanceViewModel
+import com.hogargo.kmp.finance.ui.FinanceScreen
 import com.hogargo.kmp.household.HouseholdViewModel
 import com.hogargo.kmp.household.ui.ChangeNameScreen
 import com.hogargo.kmp.household.ui.ChangeRecoveryUserScreen
@@ -98,7 +102,7 @@ fun WelcomeNavHost(viewModel: HouseholdViewModel) {
 /** App con sesion abierta: pestanas, Acerca de y Perfil. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavHost(householdViewModel: HouseholdViewModel) {
+fun AppNavHost(modules: AppModules, householdViewModel: HouseholdViewModel, householdId: String) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -144,7 +148,9 @@ fun AppNavHost(householdViewModel: HouseholdViewModel) {
             composable(Routes.HOME) {
                 HomeScreen(onOpenAbout = { navController.navigate(Routes.ABOUT) })
             }
-            composable(Routes.FINANCE) { ComingSoonScreen("Finanzas") }
+            composable(Routes.FINANCE) {
+                FinanceScreen(viewModel(key = "finance-$householdId") { FinanceViewModel(modules.finance, householdId) })
+            }
             composable(Routes.PETS) { ComingSoonScreen("Mascota") }
             composable(Routes.CALENDAR) { ComingSoonScreen("Calendario") }
             composable(Routes.ABOUT) { AboutScreen(onBack = { navController.popBackStack() }) }
