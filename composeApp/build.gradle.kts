@@ -43,6 +43,13 @@ kotlin {
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
         }
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
+        }
+        // Pruebas del repositorio de hogares en la JVM con SQLite en memoria.
+        androidUnitTest.dependencies {
+            implementation(libs.sqldelight.sqlite.driver)
+        }
     }
 }
 
