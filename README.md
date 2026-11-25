@@ -38,6 +38,18 @@ Pruebas: `./gradlew :composeApp:testDebugUnitTest` (reglas comunes + repositorio
 
 Si ya tenias instalada la version esqueleto, desinstalala antes: el esquema cambio y no hay migracion.
 
+## Finanzas, Mascota y Calendario (modulo de Nelson)
+
+Port a KMP de las tres pantallas de HogarGo Android/iOS, con las mismas reglas. Cada modulo vive en su paquete de `commonMain` (`finance/`, `pet/`, `calendar/`, `home/`) con esquema `.sq` propio, reglas puras, repositorio SQLDelight, ViewModel y pantalla Compose. Todo dato lleva `householdId`.
+
+- **Finanzas**: gastos (coma o punto decimal), metas de ahorro con aportes y frasco, resumen y desglose del mes, lista de gastos recientes.
+- **Mascota (Zori)**: decaimiento 0.05 cada 2 h, +0.15 por accion con cooldown de 15 min (alimentar y jugar independientes), nivel = 1 + acciones / 5, armario con monedas, el aviso de cooldown se actualiza solo. La imagen del zorro es un recurso compartido de Compose (`composeResources/`).
+- **Calendario**: cuadricula del mes (semana desde domingo), puntos de factura/evento/tarea, detalle del dia, proximos eventos y facturas.
+- **Inicio**: resumen con Zori, gasto del mes, proximo evento y facturas por pagar.
+- **Borrado en cascada**: al salir la ultima persona se borran los datos de estos modulos (`HouseholdRepository.deleteEverything`).
+
+Nota: las monedas de Zori y las "tareas completadas" del calendario se leen de la tabla `HouseholdTask` (`Task.sq`). Aun no hay pantalla de tareas que la llene, asi que hasta entonces las monedas valen 0.
+
 ## Ejecutar
 
 **Android** (JDK 17 + Android SDK):
