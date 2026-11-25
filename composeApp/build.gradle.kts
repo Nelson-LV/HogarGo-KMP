@@ -29,6 +29,7 @@ kotlin {
             implementation(compose.foundation)
             implementation(compose.material3)
             implementation(compose.ui)
+            implementation(compose.components.resources)
             implementation(libs.jetbrains.lifecycle.viewmodel.compose)
             implementation(libs.jetbrains.navigation.compose)
             implementation(libs.kotlinx.coroutines.core)
@@ -75,6 +76,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+}
+
+compose.resources {
+    packageOfResClass = "com.hogargo.kmp.resources"
+    generateResClass = always
 }
 
 sqldelight {
