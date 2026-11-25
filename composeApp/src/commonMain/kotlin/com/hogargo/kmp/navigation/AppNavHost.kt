@@ -47,6 +47,8 @@ import com.hogargo.kmp.household.ui.ProfileScreen
 import com.hogargo.kmp.household.ui.RecoverCodesScreen
 import com.hogargo.kmp.household.ui.RenameHouseholdScreen
 import com.hogargo.kmp.household.ui.WelcomeScreen
+import com.hogargo.kmp.tasks.ui.TaskViewModel
+import com.hogargo.kmp.tasks.ui.TasksScreen
 import com.hogargo.kmp.ui.screens.AboutScreen
 
 /** Rutas de la app. La navegacion vive 100% en commonMain. */
@@ -60,6 +62,7 @@ object Routes {
 
     // Con sesion
     const val HOME = "home"
+    const val TASKS = "tasks"
     const val FINANCE = "finance"
     const val PETS = "pets"
     const val CALENDAR = "calendar"
@@ -74,6 +77,7 @@ private data class TopLevel(val route: String, val labelEs: String, val labelEn:
 
 private val topLevelDestinations = listOf(
     TopLevel(Routes.HOME, "Inicio", "Home", "🏠"),
+    TopLevel(Routes.TASKS, "Tareas", "Tasks", "📝"),
     TopLevel(Routes.FINANCE, "Finanzas", "Finance", "💰"),
     TopLevel(Routes.PETS, "Mascotas", "Pet", "🐾"),
     TopLevel(Routes.CALENDAR, "Calendario", "Calendar", "📅"),
@@ -107,7 +111,12 @@ fun WelcomeNavHost(viewModel: HouseholdViewModel) {
 /** App con sesion abierta: pestanas, Acerca de y Perfil. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavHost(modules: AppModules, householdViewModel: HouseholdViewModel, householdId: String) {
+fun AppNavHost(
+    modules: AppModules,
+    householdViewModel: HouseholdViewModel,
+    householdId: String,
+    taskViewModel: TaskViewModel = viewModel { TaskViewModel(modules.task, householdViewModel) },
+) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -157,6 +166,9 @@ fun AppNavHost(modules: AppModules, householdViewModel: HouseholdViewModel, hous
                     },
                     onOpenAbout = { navController.navigate(Routes.ABOUT) },
                 )
+            }
+            composable(Routes.TASKS) {
+                TasksScreen(taskViewModel, householdViewModel)
             }
             composable(Routes.FINANCE) {
                 FinanceScreen(viewModel(key = "finance-$householdId") { FinanceViewModel(modules.finance, householdId) })

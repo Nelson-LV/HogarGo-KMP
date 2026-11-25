@@ -16,7 +16,7 @@ CREATE TABLE Task (
     createdAt INTEGER NOT NULL
 );
 
-CREATE INDEX task_household ON Task(householdId);
+CREATE INDEX tasks_household_idx ON Task(householdId);
 
 -- Consultas de Tareas
 

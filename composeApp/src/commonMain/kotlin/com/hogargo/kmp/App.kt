@@ -21,8 +21,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hogargo.kmp.data.DatabaseDriverFactory
-import com.hogargo.kmp.data.HogarGoRepository
 import com.hogargo.kmp.db.HogarGoDatabase
+import com.hogargo.kmp.di.AppModules
 import com.hogargo.kmp.household.HouseholdViewModel
 import com.hogargo.kmp.household.SessionPhase
 import com.hogargo.kmp.household.data.HouseholdRepository
@@ -32,21 +32,19 @@ import com.hogargo.kmp.household.ui.HogarGoColors
 import com.hogargo.kmp.navigation.AppNavHost
 import com.hogargo.kmp.navigation.LoadingScreen
 import com.hogargo.kmp.navigation.WelcomeNavHost
-import com.hogargo.kmp.tasks.data.TaskRepository
 import com.hogargo.kmp.tasks.ui.TaskViewModel
 import com.hogargo.kmp.ui.theme.HogarGoTheme
 
 @Composable
 fun App(driverFactory: DatabaseDriverFactory, notifier: HouseholdNotifier) {
     val database = remember { HogarGoDatabase(driverFactory.createDriver()) }
-    val repository = remember { HogarGoRepository(database) }
-    val taskRepository = remember { TaskRepository(database) }
+    val modules = remember { AppModules(database) }
 
     val householdViewModel = viewModel {
         HouseholdViewModel(HouseholdRepository(database), SessionStore(database), notifier)
     }
     val taskViewModel = viewModel {
-        TaskViewModel(taskRepository, householdViewModel)
+        TaskViewModel(modules.task, householdViewModel)
     }
 
     val phase by householdViewModel.phase.collectAsState()
@@ -66,7 +64,7 @@ fun App(driverFactory: DatabaseDriverFactory, notifier: HouseholdNotifier) {
                 SessionPhase.Welcome -> WelcomeNavHost(householdViewModel)
                 // La clave por hogar evita mezclar datos entre hogares.
                 is SessionPhase.SignedIn -> key(current.householdId) {
-                    AppNavHost(repository, householdViewModel, taskViewModel)
+                    AppNavHost(modules, householdViewModel, current.householdId, taskViewModel)
                 }
             }
             SnackbarHost(
