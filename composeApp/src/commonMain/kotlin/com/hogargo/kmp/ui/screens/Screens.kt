@@ -24,20 +24,6 @@ private fun ScreenColumn(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun HomeScreen(onOpenAbout: () -> Unit) = ScreenColumn {
-    Text("Inicio", style = MaterialTheme.typography.headlineMedium)
-    Spacer(Modifier.height(24.dp))
-    OutlinedButton(onClick = onOpenAbout) { Text("Acerca de y creditos") }
-}
-
-/** Seccion aun no implementada: se reemplaza cuando llega el modulo. */
-@Composable
-fun ComingSoonScreen(title: String) = ScreenColumn {
-    Text(title, style = MaterialTheme.typography.headlineMedium)
-    Text("Pendiente de implementar", style = MaterialTheme.typography.bodyMedium)
-}
-
-@Composable
 fun AboutScreen(onBack: () -> Unit) = ScreenColumn {
     Text("Acerca de HogarGo", style = MaterialTheme.typography.headlineMedium)
     Spacer(Modifier.height(8.dp))

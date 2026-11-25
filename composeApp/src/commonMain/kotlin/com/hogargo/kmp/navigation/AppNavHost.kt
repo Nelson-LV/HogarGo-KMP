@@ -29,6 +29,8 @@ import com.hogargo.kmp.calendar.CalendarViewModel
 import com.hogargo.kmp.calendar.ui.CalendarScreen
 import com.hogargo.kmp.di.AppModules
 import com.hogargo.kmp.finance.FinanceViewModel
+import com.hogargo.kmp.home.HomeScreen
+import com.hogargo.kmp.home.HomeViewModel
 import com.hogargo.kmp.finance.ui.FinanceScreen
 import com.hogargo.kmp.household.HouseholdViewModel
 import com.hogargo.kmp.pet.PetViewModel
@@ -45,7 +47,6 @@ import com.hogargo.kmp.household.ui.RecoverCodesScreen
 import com.hogargo.kmp.household.ui.RenameHouseholdScreen
 import com.hogargo.kmp.household.ui.WelcomeScreen
 import com.hogargo.kmp.ui.screens.AboutScreen
-import com.hogargo.kmp.ui.screens.HomeScreen
 
 /** Rutas de la app. La navegacion vive 100% en commonMain. */
 object Routes {
@@ -149,7 +150,12 @@ fun AppNavHost(modules: AppModules, householdViewModel: HouseholdViewModel, hous
             modifier = Modifier.padding(padding).consumeWindowInsets(padding),
         ) {
             composable(Routes.HOME) {
-                HomeScreen(onOpenAbout = { navController.navigate(Routes.ABOUT) })
+                HomeScreen(
+                    viewModel(key = "home-$householdId") {
+                        HomeViewModel(modules.finance, modules.calendar, modules.pet, householdId)
+                    },
+                    onOpenAbout = { navController.navigate(Routes.ABOUT) },
+                )
             }
             composable(Routes.FINANCE) {
                 FinanceScreen(viewModel(key = "finance-$householdId") { FinanceViewModel(modules.finance, householdId) })
