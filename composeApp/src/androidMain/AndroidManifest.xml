@@ -3,6 +3,8 @@
 
     <!-- Avisos del hogar como notificaciones locales (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Conectividad para el consejo del dia (Advice Slip API) -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
