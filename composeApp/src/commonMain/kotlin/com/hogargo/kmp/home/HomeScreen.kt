@@ -7,17 +7,24 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.hogargo.kmp.advice.ui.AdviceUiState
+import com.hogargo.kmp.advice.ui.DailyAdviceViewModel
 import com.hogargo.kmp.finance.FinanceRules
 import com.hogargo.kmp.household.ui.HogarCard
 import com.hogargo.kmp.household.ui.HogarGoColors
@@ -38,8 +45,13 @@ import com.hogargo.kmp.ui.common.ScreenHeader
 import kotlinx.datetime.LocalDate
 
 @Composable
-fun HomeScreen(viewModel: HomeViewModel, onOpenAbout: () -> Unit) {
+fun HomeScreen(
+    viewModel: HomeViewModel,
+    adviceViewModel: DailyAdviceViewModel = viewModel { DailyAdviceViewModel() },
+    onOpenAbout: () -> Unit,
+) {
     val state by viewModel.state.collectAsState()
+    val adviceState by adviceViewModel.uiState.collectAsState()
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -82,6 +94,72 @@ fun HomeScreen(viewModel: HomeViewModel, onOpenAbout: () -> Unit) {
                     )
                 }
                 Text(L10n.homeUnpaidBills(state.unpaidBills), fontSize = 13.sp, color = HogarGoColors.secondaryText, modifier = Modifier.padding(top = 8.dp))
+            }
+        }
+
+        // Consejo del Dia (Advice Slip API)
+        HogarCard {
+            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                ) {
+                    Text(
+                        "💡 " + L10n.tr("Consejo del Día", "Daily Advice"),
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = HogarGoColors.primaryText,
+                    )
+                    IconButton(
+                        onClick = { adviceViewModel.loadDailyAdvice() },
+                        modifier = Modifier.size(28.dp),
+                    ) {
+                        Text("🔄", fontSize = 14.sp)
+                    }
+                }
+                when (val advice = adviceState) {
+                    is AdviceUiState.Loading -> {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(16.dp),
+                                strokeWidth = 2.dp,
+                                color = HogarGoColors.brandOrangeDeep,
+                            )
+                            Text(
+                                L10n.tr("Consultando consejo del día...", "Fetching daily advice..."),
+                                fontSize = 13.sp,
+                                color = HogarGoColors.secondaryText,
+                            )
+                        }
+                    }
+                    is AdviceUiState.Success -> {
+                        Text(
+                            text = "“${advice.advice.advice}”",
+                            fontSize = 14.sp,
+                            fontStyle = FontStyle.Italic,
+                            fontWeight = FontWeight.Medium,
+                            color = HogarGoColors.primaryText,
+                        )
+                    }
+                    is AdviceUiState.Error -> {
+                        Text(
+                            text = "“${advice.fallbackAdvice.advice}”",
+                            fontSize = 14.sp,
+                            fontStyle = FontStyle.Italic,
+                            fontWeight = FontWeight.Medium,
+                            color = HogarGoColors.primaryText,
+                        )
+                        Text(
+                            L10n.tr("📱 Modo sin conexión (consejo local)", "📱 Offline mode (local advice)"),
+                            fontSize = 11.sp,
+                            color = HogarGoColors.secondaryText,
+                        )
+                    }
+                }
             }
         }
 
