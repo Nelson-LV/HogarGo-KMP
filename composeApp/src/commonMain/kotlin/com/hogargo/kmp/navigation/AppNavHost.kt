@@ -37,6 +37,8 @@ import com.hogargo.kmp.household.ui.ProfileScreen
 import com.hogargo.kmp.household.ui.RecoverCodesScreen
 import com.hogargo.kmp.household.ui.RenameHouseholdScreen
 import com.hogargo.kmp.household.ui.WelcomeScreen
+import com.hogargo.kmp.tasks.ui.TaskViewModel
+import com.hogargo.kmp.tasks.ui.TasksScreen
 import com.hogargo.kmp.ui.screens.AboutScreen
 import com.hogargo.kmp.ui.screens.CalendarScreen
 import com.hogargo.kmp.ui.screens.FinanceScreen
@@ -54,6 +56,7 @@ object Routes {
 
     // Con sesion
     const val HOME = "home"
+    const val TASKS = "tasks"
     const val FINANCE = "finance"
     const val PETS = "pets"
     const val CALENDAR = "calendar"
@@ -68,6 +71,7 @@ private data class TopLevel(val route: String, val label: String, val emoji: Str
 
 private val topLevelDestinations = listOf(
     TopLevel(Routes.HOME, "Inicio", "🏠"),
+    TopLevel(Routes.TASKS, "Tareas", "📝"),
     TopLevel(Routes.FINANCE, "Finanzas", "💰"),
     TopLevel(Routes.PETS, "Mascotas", "🐾"),
     TopLevel(Routes.CALENDAR, "Calendario", "📅"),
@@ -101,7 +105,11 @@ fun WelcomeNavHost(viewModel: HouseholdViewModel) {
 /** App con sesion abierta: pestanas, Acerca de y Perfil. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavHost(repository: HogarGoRepository, householdViewModel: HouseholdViewModel) {
+fun AppNavHost(
+    repository: HogarGoRepository,
+    householdViewModel: HouseholdViewModel,
+    taskViewModel: TaskViewModel,
+) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -141,11 +149,13 @@ fun AppNavHost(repository: HogarGoRepository, householdViewModel: HouseholdViewM
         NavHost(
             navController = navController,
             startDestination = Routes.HOME,
-            // Las pantallas internas (Perfil) traen su propia barra: no repetir el espacio del sistema.
             modifier = Modifier.padding(padding).consumeWindowInsets(padding),
         ) {
             composable(Routes.HOME) {
-                HomeScreen(repository, onOpenAbout = { navController.navigate(Routes.ABOUT) })
+                HomeScreen(repository, taskViewModel, onOpenAbout = { navController.navigate(Routes.ABOUT) })
+            }
+            composable(Routes.TASKS) {
+                TasksScreen(taskViewModel, householdViewModel)
             }
             composable(Routes.FINANCE) { FinanceScreen(repository) }
             composable(Routes.PETS) { PetsScreen(repository) }
