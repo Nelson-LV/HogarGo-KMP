@@ -21,7 +21,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hogargo.kmp.data.DatabaseDriverFactory
-import com.hogargo.kmp.data.HogarGoRepository
 import com.hogargo.kmp.db.HogarGoDatabase
 import com.hogargo.kmp.household.HouseholdViewModel
 import com.hogargo.kmp.household.SessionPhase
@@ -37,7 +36,6 @@ import com.hogargo.kmp.ui.theme.HogarGoTheme
 @Composable
 fun App(driverFactory: DatabaseDriverFactory, notifier: HouseholdNotifier) {
     val database = remember { HogarGoDatabase(driverFactory.createDriver()) }
-    val repository = remember { HogarGoRepository(database) }
     val householdViewModel = viewModel {
         HouseholdViewModel(HouseholdRepository(database), SessionStore(database), notifier)
     }
@@ -57,7 +55,7 @@ fun App(driverFactory: DatabaseDriverFactory, notifier: HouseholdNotifier) {
                 SessionPhase.Loading -> LoadingScreen()
                 SessionPhase.Welcome -> WelcomeNavHost(householdViewModel)
                 // La clave por hogar evita mezclar datos entre hogares.
-                is SessionPhase.SignedIn -> key(current.householdId) { AppNavHost(repository, householdViewModel) }
+                is SessionPhase.SignedIn -> key(current.householdId) { AppNavHost(householdViewModel) }
             }
             SnackbarHost(
                 hostState = snackbar,

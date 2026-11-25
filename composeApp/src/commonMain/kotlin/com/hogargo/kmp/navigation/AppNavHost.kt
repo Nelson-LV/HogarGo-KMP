@@ -24,7 +24,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.hogargo.kmp.data.HogarGoRepository
 import com.hogargo.kmp.household.HouseholdViewModel
 import com.hogargo.kmp.household.ui.ChangeNameScreen
 import com.hogargo.kmp.household.ui.ChangeRecoveryUserScreen
@@ -38,10 +37,8 @@ import com.hogargo.kmp.household.ui.RecoverCodesScreen
 import com.hogargo.kmp.household.ui.RenameHouseholdScreen
 import com.hogargo.kmp.household.ui.WelcomeScreen
 import com.hogargo.kmp.ui.screens.AboutScreen
-import com.hogargo.kmp.ui.screens.CalendarScreen
-import com.hogargo.kmp.ui.screens.FinanceScreen
+import com.hogargo.kmp.ui.screens.ComingSoonScreen
 import com.hogargo.kmp.ui.screens.HomeScreen
-import com.hogargo.kmp.ui.screens.PetsScreen
 
 /** Rutas de la app. La navegacion vive 100% en commonMain. */
 object Routes {
@@ -101,7 +98,7 @@ fun WelcomeNavHost(viewModel: HouseholdViewModel) {
 /** App con sesion abierta: pestanas, Acerca de y Perfil. */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppNavHost(repository: HogarGoRepository, householdViewModel: HouseholdViewModel) {
+fun AppNavHost(householdViewModel: HouseholdViewModel) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route
@@ -145,11 +142,11 @@ fun AppNavHost(repository: HogarGoRepository, householdViewModel: HouseholdViewM
             modifier = Modifier.padding(padding).consumeWindowInsets(padding),
         ) {
             composable(Routes.HOME) {
-                HomeScreen(repository, onOpenAbout = { navController.navigate(Routes.ABOUT) })
+                HomeScreen(onOpenAbout = { navController.navigate(Routes.ABOUT) })
             }
-            composable(Routes.FINANCE) { FinanceScreen(repository) }
-            composable(Routes.PETS) { PetsScreen(repository) }
-            composable(Routes.CALENDAR) { CalendarScreen(repository) }
+            composable(Routes.FINANCE) { ComingSoonScreen("Finanzas") }
+            composable(Routes.PETS) { ComingSoonScreen("Mascota") }
+            composable(Routes.CALENDAR) { ComingSoonScreen("Calendario") }
             composable(Routes.ABOUT) { AboutScreen(onBack = { navController.popBackStack() }) }
 
             composable(Routes.PROFILE) {
