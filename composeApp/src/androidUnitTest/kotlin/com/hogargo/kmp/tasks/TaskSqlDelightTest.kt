@@ -108,4 +108,77 @@ class TaskSqlDelightTest {
         q.deleteTasksByHousehold("home-123")
         assertTrue(q.tasksByHousehold("home-123").executeAsList().isEmpty())
     }
+
+    @Test
+    fun queryPendingAndCompletedSeparately() {
+        val q = db.tasksQueries
+
+        q.insertTask(
+            id = "task-a",
+            householdId = "home-123",
+            title = "Barrer la sala",
+            category = "Limpieza",
+            assignedMemberId = "m1",
+            assignedMemberName = "Jhonatan",
+            assignedToOther = false,
+            coinReward = 10,
+            dueDate = "2026-05-10",
+            dueTime = "10:00",
+            isCompleted = false,
+            completedAt = null,
+            createdAt = 1000L,
+        )
+        q.insertTask(
+            id = "task-b",
+            householdId = "home-123",
+            title = "Regar las plantas",
+            category = "Jardín",
+            assignedMemberId = "m2",
+            assignedMemberName = "Dana",
+            assignedToOther = false,
+            coinReward = 15,
+            dueDate = "2026-05-10",
+            dueTime = "11:00",
+            isCompleted = true,
+            completedAt = 1500L,
+            createdAt = 1000L,
+        )
+
+        val pending = q.pendingTasksByHousehold("home-123").executeAsList()
+        val completed = q.completedTasksByHousehold("home-123").executeAsList()
+
+        assertEquals(1, pending.size)
+        assertEquals("task-a", pending.first().id)
+        assertEquals(1, completed.size)
+        assertEquals("task-b", completed.first().id)
+
+        // Suma de recompensas de completadas
+        val totalCoins = completed.sumOf { it.coinReward }
+        assertEquals(15L, totalCoins)
+    }
+
+    @Test
+    fun deleteIndividualTask() {
+        val q = db.tasksQueries
+
+        q.insertTask(
+            id = "task-delete-me",
+            householdId = "home-123",
+            title = "Tarea temporal",
+            category = "Otros",
+            assignedMemberId = "m1",
+            assignedMemberName = "Jhonatan",
+            assignedToOther = false,
+            coinReward = 5,
+            dueDate = "2026-05-10",
+            dueTime = "12:00",
+            isCompleted = false,
+            completedAt = null,
+            createdAt = 1000L,
+        )
+
+        assertEquals(1, q.tasksByHousehold("home-123").executeAsList().size)
+        q.deleteTask("task-delete-me")
+        assertEquals(0, q.tasksByHousehold("home-123").executeAsList().size)
+    }
 }
