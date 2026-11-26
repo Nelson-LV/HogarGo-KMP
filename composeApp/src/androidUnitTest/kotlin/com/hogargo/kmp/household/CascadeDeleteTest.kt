@@ -31,7 +31,7 @@ class CascadeDeleteTest {
         pet.refreshOnOpen(householdId)
         calendar.addEvent(householdId, "Cita", day, "10:00")
         calendar.addBill(householdId, "Luz", "40", day)
-        db.taskQueries.insertTask("t-$householdId", householdId, "Tarea", true, day.toString(), 10, 0)
+        db.tasksQueries.insertTask("t-$householdId", householdId, "Tarea", "General", "m1", "Ana", false, 10, "2026-11-20", "18:00", true, 1_000L, 0)
     }
 
     @Test
@@ -48,7 +48,7 @@ class CascadeDeleteTest {
         assertNull(pet.state(id))
         assertTrue(pet.wardrobe(id).isEmpty())
         assertTrue(calendar.events(id).isEmpty() && calendar.bills(id).isEmpty())
-        assertTrue(db.taskQueries.completedTasks(id).executeAsList().isEmpty())
+        assertTrue(db.tasksQueries.tasksByHousehold(id).executeAsList().isEmpty())
 
         // El otro hogar conserva todo
         val keep = other.householdId

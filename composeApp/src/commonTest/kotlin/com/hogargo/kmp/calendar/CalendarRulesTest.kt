@@ -2,8 +2,9 @@ package com.hogargo.kmp.calendar
 
 import com.hogargo.kmp.db.Bill
 import com.hogargo.kmp.db.CalendarEvent
-import com.hogargo.kmp.db.HouseholdTask
+import com.hogargo.kmp.db.Task
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -14,7 +15,8 @@ class CalendarRulesTest {
     private fun bill(due: String, paid: Boolean = false) = Bill("b-$due-$paid", "h1", "Internet", 50.0, due, paid, 0)
     private fun event(date: String, time: String? = null, created: Long = 0) =
         CalendarEvent("e-$date-$time", "h1", "Evento", date, time, false, created)
-    private fun task(date: String) = HouseholdTask("t-$date", "h1", "Tarea", true, date, 10, 0)
+    private fun task(date: String, member: String = "m1", done: Boolean = false, other: Boolean = false) =
+        Task("t-$date-$member-$done", "h1", "Tarea", "General", member, "Ana", other, 10, date, "18:00", done, null, 0)
 
     @Test
     fun monthStartingOnWednesdayHasThreeLeadingBlanks() {
@@ -49,18 +51,38 @@ class CalendarRulesTest {
             LocalDate(2026, 11, 25),
             events = listOf(event("2026-11-25")),
             bills = listOf(bill("2026-11-25")),
-            tasks = listOf(task("2026-11-25")),
+            pendingTasks = listOf(task("2026-11-25")),
+            completedDays = setOf("2026-11-25"),
             today = today,
         )
-        assertEquals(listOf(DayDot.BILL, DayDot.EVENT, DayDot.TASK), dots)
+        assertEquals(listOf(DayDot.BILL, DayDot.EVENT, DayDot.TASK_PENDING, DayDot.TASK), dots)
     }
 
     @Test
     fun unpaidOverdueBillIsRedAndPaidBillHasNoDot() {
-        val overdue = CalendarRules.dotsFor(LocalDate(2026, 11, 10), emptyList(), listOf(bill("2026-11-10")), emptyList(), today)
+        val overdue = CalendarRules.dotsFor(LocalDate(2026, 11, 10), emptyList(), listOf(bill("2026-11-10")), emptyList(), emptySet(), today)
         assertEquals(listOf(DayDot.BILL_OVERDUE), overdue)
-        val paid = CalendarRules.dotsFor(LocalDate(2026, 11, 10), emptyList(), listOf(bill("2026-11-10", paid = true)), emptyList(), today)
+        val paid = CalendarRules.dotsFor(LocalDate(2026, 11, 10), emptyList(), listOf(bill("2026-11-10", paid = true)), emptyList(), emptySet(), today)
         assertEquals(emptyList(), paid)
+    }
+
+    @Test
+    fun onlyMyUnfinishedTasksArePending() {
+        val tasks = listOf(
+            task("2026-11-25"),
+            task("2026-11-25", member = "m2"),
+            task("2026-11-26", done = true),
+            task("2026-11-27", member = "", other = true),
+        )
+        assertEquals(listOf("t-2026-11-25-m1-false"), CalendarRules.pendingTasksFor(tasks, "m1").map { it.id })
+    }
+
+    @Test
+    fun completedDayComesFromTheCompletionTime() {
+        val zone = TimeZone.UTC
+        val done = task("2026-11-20", done = true).copy(completedAt = 86_400_000L)
+        assertEquals("1970-01-02", CalendarRules.completedDay(done, zone))
+        assertNull(CalendarRules.completedDay(task("2026-11-20"), zone))
     }
 
     @Test

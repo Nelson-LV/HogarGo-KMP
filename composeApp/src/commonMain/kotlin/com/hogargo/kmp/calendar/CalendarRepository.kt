@@ -7,22 +7,19 @@ import com.hogargo.kmp.core.nowMillis
 import com.hogargo.kmp.db.Bill
 import com.hogargo.kmp.db.CalendarEvent
 import com.hogargo.kmp.db.HogarGoDatabase
-import com.hogargo.kmp.db.HouseholdTask
+import com.hogargo.kmp.db.Task
 import com.hogargo.kmp.finance.FinanceRules
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 
-/**
- * Facturas y eventos del hogar. Las tareas completadas solo se leen:
- * // TODO(integracion tareas): cuando exista el modulo de tareas, crear aqui el enlace con "proxima tarea".
- */
+/** Facturas y eventos del hogar. Las tareas (modulo de Tareas) aqui solo se leen. */
 class CalendarRepository(
     db: HogarGoDatabase,
     private val now: () -> Long = ::nowMillis,
 ) {
     private val q = db.calendarQueries
-    private val tasks = db.taskQueries
+    private val tasks = db.tasksQueries
 
     fun observeBills(householdId: String): Flow<List<Bill>> =
         q.billsByHousehold(householdId).asFlow().mapToList(Dispatchers.Default)
@@ -30,8 +27,8 @@ class CalendarRepository(
     fun observeEvents(householdId: String): Flow<List<CalendarEvent>> =
         q.eventsByHousehold(householdId).asFlow().mapToList(Dispatchers.Default)
 
-    fun observeCompletedTasks(householdId: String): Flow<List<HouseholdTask>> =
-        tasks.completedTasks(householdId).asFlow().mapToList(Dispatchers.Default)
+    fun observeTasks(householdId: String): Flow<List<Task>> =
+        tasks.tasksByHousehold(householdId).asFlow().mapToList(Dispatchers.Default)
 
     fun bills(householdId: String): List<Bill> = q.billsByHousehold(householdId).executeAsList()
 

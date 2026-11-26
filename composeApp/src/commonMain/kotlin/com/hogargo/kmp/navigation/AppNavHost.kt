@@ -168,6 +168,7 @@ fun AppNavHost(
     modules: AppModules,
     householdViewModel: HouseholdViewModel,
     householdId: String,
+    memberId: String,
     taskViewModel: TaskViewModel = viewModel {
         TaskViewModel(modules.task, householdViewModel, petRepository = modules.pet)
     },
@@ -289,7 +290,11 @@ fun AppNavHost(
                 PetScreen(viewModel(key = "pet-$householdId") { PetViewModel(modules.pet, householdId) })
             }
             composable(Routes.CALENDAR) {
-                CalendarScreen(viewModel(key = "calendar-$householdId") { CalendarViewModel(modules.calendar, householdId) })
+                CalendarScreen(
+                    viewModel(key = "calendar-$householdId-$memberId") {
+                        CalendarViewModel(modules.calendar, householdId, memberId)
+                    },
+                )
             }
             composable(Routes.ABOUT) { AboutScreen(onBack = { navController.popBackStack() }) }
 

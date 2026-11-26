@@ -79,12 +79,12 @@ class CalendarRepositoryTest {
     }
 
     @Test
-    fun completedTasksAreReadFromTheTaskTable() {
-        db.taskQueries.insertTask("t1", "h1", "Lavar", true, "2026-11-20", 10, 0)
-        db.taskQueries.insertTask("t2", "h1", "Pendiente", false, null, 10, 0)
-        db.taskQueries.insertTask("t3", "h2", "Otro hogar", true, "2026-11-20", 10, 0)
-        val completed = db.taskQueries.completedTasks("h1").executeAsList()
-        assertEquals(listOf("t1"), completed.map { it.id })
-        assertEquals("2026-11-20", completed.single().completedDate)
+    fun tasksAreReadFromTheTasksModuleTable() {
+        db.tasksQueries.insertTask("t1", "h1", "Lavar", "General", "m1", "Ana", false, 10, "2026-11-20", "18:00", true, 1_000L, 0)
+        db.tasksQueries.insertTask("t2", "h1", "Pendiente", "General", "m1", "Ana", false, 10, "2026-11-20", "18:00", false, null, 0)
+        db.tasksQueries.insertTask("t3", "h2", "Otro hogar", "General", "m1", "Ana", false, 10, "2026-11-20", "18:00", true, 1_000L, 0)
+        val tasks = db.tasksQueries.tasksByHousehold("h1").executeAsList()
+        assertEquals(setOf("t1", "t2"), tasks.map { it.id }.toSet())
+        assertEquals(listOf("t2"), CalendarRules.pendingTasksFor(tasks, "m1").map { it.id })
     }
 }

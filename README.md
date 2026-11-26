@@ -48,7 +48,7 @@ Port a KMP de las tres pantallas de HogarGo Android/iOS, con las mismas reglas. 
 - **Inicio**: resumen con Zori, gasto del mes, proximo evento y facturas por pagar.
 - **Borrado en cascada**: al salir la ultima persona se borran los datos de estos modulos (`HouseholdRepository.deleteEverything`).
 
-Nota: las monedas de Zori y las "tareas completadas" del calendario se leen de la tabla `HouseholdTask` (`Task.sq`). Aun no hay pantalla de tareas que la llene, asi que hasta entonces las monedas valen 0.
+Las monedas de Zori y las tareas del calendario salen de la tabla `Task` del modulo de Tareas: el calendario muestra las pendientes asignadas a ti (en su fecha limite) y las completadas (en el dia en que se completaron).
 
 ## Tareas, Racha Diaria y Consejo del Día (módulo de Jhonatan Palacios)
 

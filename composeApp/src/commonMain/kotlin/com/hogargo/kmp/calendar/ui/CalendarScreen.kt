@@ -6,6 +6,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -62,6 +64,8 @@ import com.hogargo.kmp.l10n.calendarBillsEmpty
 import com.hogargo.kmp.l10n.calendarDayBills
 import com.hogargo.kmp.l10n.calendarDayEmpty
 import com.hogargo.kmp.l10n.calendarDayEvents
+import com.hogargo.kmp.l10n.calendarDayPendingTasks
+import com.hogargo.kmp.l10n.calendarLegendPending
 import com.hogargo.kmp.l10n.calendarDayTasks
 import com.hogargo.kmp.l10n.calendarDeleteBill
 import com.hogargo.kmp.l10n.calendarDeleteEvent
@@ -93,7 +97,9 @@ import kotlinx.datetime.LocalDate
 
 private val EventBlue = Color(0xFF3B82C4)
 private val TaskGreen = Color(0xFF4C9A5F)
+private val PendingPurple = Color(0xFF8E6BC4)
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun CalendarScreen(viewModel: CalendarViewModel) {
     val state by viewModel.state.collectAsState()
@@ -135,9 +141,14 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
                         week.forEach { cell -> DayBox(cell, Modifier.weight(1f), onClick = { viewModel.select(it) }) }
                     }
                 }
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                FlowRow(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
                     LegendItem(EventBlue, L10n.calendarLegendEvents)
                     LegendItem(HogarGoColors.brandOrangeDeep, L10n.calendarLegendBills)
+                    LegendItem(PendingPurple, L10n.calendarLegendPending)
                     LegendItem(TaskGreen, L10n.calendarLegendTasks)
                 }
             }
@@ -150,7 +161,9 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
                     Text(L10n.longDate(state.selected), Modifier.weight(1f), fontSize = 18.sp, fontWeight = FontWeight.Bold, color = HogarGoColors.primaryText)
                     RoundButton("＋", L10n.calendarAddEvent) { eventDialogDate = state.selected }
                 }
-                if (state.selectedEvents.isEmpty() && state.selectedBills.isEmpty() && state.selectedTasks.isEmpty()) {
+                if (state.selectedEvents.isEmpty() && state.selectedBills.isEmpty() &&
+                    state.selectedPendingTasks.isEmpty() && state.selectedTasks.isEmpty()
+                ) {
                     Text(L10n.calendarDayEmpty, fontSize = 14.sp, color = HogarGoColors.secondaryText)
                 }
                 if (state.selectedEvents.isNotEmpty()) {
@@ -163,6 +176,13 @@ fun CalendarScreen(viewModel: CalendarViewModel) {
                     SubTitle(L10n.calendarDayBills)
                     state.selectedBills.forEach { bill ->
                         BillRow(bill, state.today, showDate = true, onPaid = { viewModel.setBillPaid(bill.id, it) }, onDelete = { viewModel.deleteBill(bill.id) })
+                    }
+                }
+                if (state.selectedPendingTasks.isNotEmpty()) {
+                    SubTitle(L10n.calendarDayPendingTasks)
+                    state.selectedPendingTasks.forEach { task ->
+                        val time = if (task.dueTime.isBlank()) "" else " • ${task.dueTime}"
+                        Text("○ ${task.title}$time", fontSize = 14.sp, color = HogarGoColors.primaryText)
                     }
                 }
                 if (state.selectedTasks.isNotEmpty()) {
@@ -276,6 +296,7 @@ private fun DayBox(cell: DayCell?, modifier: Modifier, onClick: (LocalDate) -> U
                         DayDot.BILL -> HogarGoColors.brandOrangeDeep
                         DayDot.BILL_OVERDUE -> HogarGoColors.alertRed
                         DayDot.EVENT -> EventBlue
+                        DayDot.TASK_PENDING -> PendingPurple
                         DayDot.TASK -> TaskGreen
                     }
                     Box(Modifier.size(5.dp).clip(CircleShape).background(color))

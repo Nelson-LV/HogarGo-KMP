@@ -10,7 +10,6 @@ import com.hogargo.kmp.db.PetState
 import com.hogargo.kmp.db.WardrobeItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 
 /** Estado de Zori y su armario. Las monedas se calculan siempre; no se guardan. */
 class PetRepository(
@@ -26,23 +25,16 @@ class PetRepository(
         q.wardrobe(householdId).asFlow().mapToList(Dispatchers.Default)
 
     fun observeEarnedCoins(householdId: String): Flow<Long> =
-        combine(
-            db.tasksQueries.earnedCoins(householdId).asFlow().mapToOne(Dispatchers.Default),
-            db.taskQueries.earnedCoins(householdId).asFlow().mapToOne(Dispatchers.Default),
-        ) { real, legacy -> real + legacy }
+        db.tasksQueries.earnedCoins(householdId).asFlow().mapToOne(Dispatchers.Default)
 
     fun state(householdId: String): PetState? = q.petState(householdId).executeAsOneOrNull()
 
     fun wardrobe(householdId: String): List<WardrobeItem> = q.wardrobe(householdId).executeAsList()
 
-    fun coins(householdId: String): Int {
-        val totalEarned = db.tasksQueries.earnedCoins(householdId).executeAsOne() +
-            db.taskQueries.earnedCoins(householdId).executeAsOne()
-        return PetRules.coins(
-            totalEarned,
-            wardrobe(householdId).filter { it.owned }.map { it.itemId },
-        )
-    }
+    fun coins(householdId: String): Int = PetRules.coins(
+        db.tasksQueries.earnedCoins(householdId).executeAsOne(),
+        wardrobe(householdId).filter { it.owned }.map { it.itemId },
+    )
 
     /** Bonificación de ánimo y cuidado a Zori cuando se completa una tarea del hogar. */
     fun boostHappinessOnTaskCompleted(householdId: String) = db.transaction {

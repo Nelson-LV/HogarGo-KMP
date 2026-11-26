@@ -64,7 +64,7 @@ fun App(driverFactory: DatabaseDriverFactory, notifier: HouseholdNotifier) {
                 SessionPhase.Welcome -> WelcomeNavHost(householdViewModel)
                 // La clave por hogar evita mezclar datos entre hogares.
                 is SessionPhase.SignedIn -> key(current.householdId) {
-                    AppNavHost(modules, householdViewModel, current.householdId, taskViewModel)
+                    AppNavHost(modules, householdViewModel, current.householdId, current.memberId, taskViewModel)
                 }
             }
             SnackbarHost(

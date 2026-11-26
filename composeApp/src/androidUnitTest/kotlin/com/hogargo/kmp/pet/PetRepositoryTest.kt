@@ -22,7 +22,7 @@ class PetRepositoryTest {
     }
 
     private fun completedTask(householdId: String, id: String, reward: Long = 10) =
-        db.taskQueries.insertTask(id, householdId, "tarea $id", true, "2026-11-20", reward, 0)
+        db.tasksQueries.insertTask(id, householdId, "tarea $id", "General", "m1", "Ana", false, reward, "2026-11-20", "18:00", true, 1_000L, 0)
 
     private fun careUntilLevel(householdId: String, actions: Int) {
         repeat(actions) {

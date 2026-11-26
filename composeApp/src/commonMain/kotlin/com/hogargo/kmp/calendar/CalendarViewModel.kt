@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.hogargo.kmp.core.todayLocal
 import com.hogargo.kmp.db.Bill
 import com.hogargo.kmp.db.CalendarEvent
-import com.hogargo.kmp.db.HouseholdTask
+import com.hogargo.kmp.db.Task
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,7 +24,8 @@ data class CalendarUiState(
     val selected: LocalDate = today,
     val selectedEvents: List<CalendarEvent> = emptyList(),
     val selectedBills: List<Bill> = emptyList(),
-    val selectedTasks: List<HouseholdTask> = emptyList(),
+    val selectedPendingTasks: List<Task> = emptyList(),
+    val selectedTasks: List<Task> = emptyList(),
     val upcoming: List<CalendarEvent> = emptyList(),
     val bills: List<Bill> = emptyList(),
 )
@@ -32,6 +33,7 @@ data class CalendarUiState(
 class CalendarViewModel(
     private val repository: CalendarRepository,
     private val householdId: String,
+    private val memberId: String,
     private val today: () -> LocalDate = ::todayLocal,
 ) : ViewModel() {
 
@@ -42,7 +44,7 @@ class CalendarViewModel(
     val state: StateFlow<CalendarUiState> = combine(
         repository.observeEvents(householdId),
         repository.observeBills(householdId),
-        repository.observeCompletedTasks(householdId),
+        repository.observeTasks(householdId),
         monthOffset,
         selected,
     ) { events, bills, tasks, offset, sel -> build(events, bills, tasks, offset, sel) }
@@ -77,14 +79,19 @@ class CalendarViewModel(
     private fun build(
         events: List<CalendarEvent>,
         bills: List<Bill>,
-        tasks: List<HouseholdTask>,
+        tasks: List<Task>,
         offset: Int,
         sel: LocalDate,
     ): CalendarUiState {
         val now = today()
         val start = CalendarRules.monthStart(now, offset)
+        val pending = CalendarRules.pendingTasksFor(tasks, memberId)
+        val completed = tasks.mapNotNull { task -> CalendarRules.completedDay(task)?.let { it to task } }
+        val completedDays = completed.map { it.first }.toSet()
         val cells = CalendarRules.monthCells(start).map { date ->
-            date?.let { DayCell(it, CalendarRules.dotsFor(it, events, bills, tasks, now), it == now, it == sel) }
+            date?.let {
+                DayCell(it, CalendarRules.dotsFor(it, events, bills, pending, completedDays, now), it == now, it == sel)
+            }
         }
         val iso = sel.toString()
         return CalendarUiState(
@@ -94,7 +101,8 @@ class CalendarViewModel(
             selected = sel,
             selectedEvents = events.filter { it.date == iso }.sortedBy { it.timeLabel.orEmpty() },
             selectedBills = bills.filter { it.dueDate == iso },
-            selectedTasks = tasks.filter { it.completedDate == iso },
+            selectedPendingTasks = pending.filter { it.dueDate == iso },
+            selectedTasks = completed.filter { it.first == iso }.map { it.second },
             upcoming = CalendarRules.upcomingEvents(events, now),
             bills = bills,
         )

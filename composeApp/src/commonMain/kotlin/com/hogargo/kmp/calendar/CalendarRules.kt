@@ -2,18 +2,22 @@ package com.hogargo.kmp.calendar
 
 import com.hogargo.kmp.db.Bill
 import com.hogargo.kmp.db.CalendarEvent
-import com.hogargo.kmp.db.HouseholdTask
+import com.hogargo.kmp.db.Task
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
 import kotlinx.datetime.isoDayNumber
 import kotlinx.datetime.plus
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
 
 enum class CalendarError { EMPTY_TITLE, INVALID_AMOUNT, INVALID_TIME }
 
 class CalendarException(val error: CalendarError) : Exception(error.name)
 
 /** Punto de color bajo un dia del mes. */
-enum class DayDot { BILL, BILL_OVERDUE, EVENT, TASK }
+enum class DayDot { BILL, BILL_OVERDUE, EVENT, TASK_PENDING, TASK }
 
 /** Reglas puras del calendario (sin base de datos). */
 object CalendarRules {
@@ -38,12 +42,28 @@ object CalendarRules {
         }
     }
 
-    /** Hasta 3 puntos en este orden: factura (roja si vencida), evento y tarea completada. */
+    /** Tareas sin completar asignadas a [memberId] (las de "otra persona" no cuentan). */
+    fun pendingTasksFor(tasks: List<Task>, memberId: String): List<Task> =
+        tasks.filter { !it.isCompleted && !it.assignedToOther && it.assignedMemberId == memberId }
+
+    /** Dia (yyyy-MM-dd) en que se completo la tarea, o null si sigue pendiente. */
+    @OptIn(ExperimentalTime::class)
+    fun completedDay(task: Task, zone: TimeZone = TimeZone.currentSystemDefault()): String? {
+        val at = task.completedAt
+        if (!task.isCompleted || at == null) return null
+        return Instant.fromEpochMilliseconds(at).toLocalDateTime(zone).date.toString()
+    }
+
+    /**
+     * Puntos en este orden: factura (roja si vencida), evento, tarea pendiente (en su fecha
+     * limite) y tarea completada (en el dia en que se completo).
+     */
     fun dotsFor(
         date: LocalDate,
         events: List<CalendarEvent>,
         bills: List<Bill>,
-        tasks: List<HouseholdTask>,
+        pendingTasks: List<Task>,
+        completedDays: Set<String>,
         today: LocalDate,
     ): List<DayDot> {
         val iso = date.toString()
@@ -53,7 +73,8 @@ object CalendarRules {
             dots += if (dayBills.any { LocalDate.parse(it.dueDate) <= today }) DayDot.BILL_OVERDUE else DayDot.BILL
         }
         if (events.any { it.date == iso }) dots += DayDot.EVENT
-        if (tasks.any { it.completedDate == iso }) dots += DayDot.TASK
+        if (pendingTasks.any { it.dueDate == iso }) dots += DayDot.TASK_PENDING
+        if (iso in completedDays) dots += DayDot.TASK
         return dots
     }
 

@@ -381,7 +381,7 @@ class HouseholdRepository(
         db.petQueries.deleteWardrobe(householdId)
         db.calendarQueries.deleteBillsByHousehold(householdId)
         db.calendarQueries.deleteEventsByHousehold(householdId)
-        db.taskQueries.deleteTasksByHousehold(householdId)
+        db.tasksQueries.deleteTasksByHousehold(householdId)
         q.deleteNoticesByHousehold(householdId)
         q.deleteMembersByHousehold(householdId)
         q.deleteHousehold(householdId)
