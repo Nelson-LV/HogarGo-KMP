@@ -61,6 +61,9 @@ import com.hogargo.kmp.household.HouseholdViewModel
 import com.hogargo.kmp.household.ui.HogarCard
 import com.hogargo.kmp.household.ui.HogarGoColors
 import com.hogargo.kmp.l10n.L10n
+import com.hogargo.kmp.core.todayLocal
+import com.hogargo.kmp.l10n.shortDate
+import kotlinx.datetime.LocalDate
 import com.hogargo.kmp.pet.ui.ZoriAvatar
 import com.hogargo.kmp.tasks.ui.TaskViewModel
 
@@ -342,7 +345,7 @@ fun HomeScreen(
                                     color = HogarGoColors.primaryText,
                                 )
                                 Text(
-                                    text = "${nextTask.category} • ${L10n.tr("Hoy", "Today")} • ${nextTask.dueTime}",
+                                    text = "${nextTask.category} • ${taskDayLabel(nextTask.dueDate)} • ${nextTask.dueTime}",
                                     fontSize = 12.sp,
                                     color = HogarGoColors.secondaryText,
                                 )
@@ -623,4 +626,10 @@ private fun QuickActionCard(
             )
         }
     }
+}
+
+/** "Hoy" si la tarea es para hoy; si no, la fecha corta. */
+private fun taskDayLabel(dueDate: String): String {
+    val date = runCatching { LocalDate.parse(dueDate) }.getOrNull() ?: return dueDate
+    return if (date == todayLocal()) L10n.tr("Hoy", "Today") else L10n.shortDate(date)
 }

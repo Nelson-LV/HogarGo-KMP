@@ -27,8 +27,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.hogargo.kmp.core.todayLocal
 import com.hogargo.kmp.db.Member
 import com.hogargo.kmp.household.ui.HogarGoColors
+import com.hogargo.kmp.l10n.L10n
+import com.hogargo.kmp.ui.common.HogarDateField
 
 val CATEGORIES = listOf("Cocina", "Jardín", "Limpieza", "General")
 
@@ -52,6 +55,7 @@ fun NewTaskDialog(
     var selectedMember by remember { mutableStateOf<Member?>(members.firstOrNull()) }
     var assignToOther by remember { mutableStateOf(false) }
     var otherAssigneeName by remember { mutableStateOf("") }
+    var dueDate by remember { mutableStateOf(todayLocal()) }
     var dueTime by remember { mutableStateOf("18:00") }
     var coinReward by remember { mutableStateOf(10) }
     var categoryExpanded by remember { mutableStateOf(false) }
@@ -169,6 +173,8 @@ fun NewTaskDialog(
                     }
                 }
 
+                HogarDateField(L10n.tr("Fecha límite", "Due date"), dueDate) { dueDate = it }
+
                 // Horario y recompensa
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -205,7 +211,7 @@ fun NewTaskDialog(
                             assigneeName,
                             assignToOther,
                             coinReward,
-                            "2026-05-10",
+                            dueDate.toString(),
                             dueTime.ifBlank { "18:00" },
                         )
                     }
