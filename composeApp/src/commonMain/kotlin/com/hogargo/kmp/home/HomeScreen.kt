@@ -17,11 +17,22 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ReceiptLong
+import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.Checklist
+import androidx.compose.material.icons.outlined.Group
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material.icons.outlined.Lightbulb
+import androidx.compose.material.icons.outlined.MoreHoriz
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.ModalBottomSheet
@@ -37,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -123,7 +135,12 @@ fun HomeScreen(
                         .background(HogarGoColors.brandOrangeContainer),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text("🔥", fontSize = 16.sp)
+                    Icon(
+                        imageVector = Icons.Filled.LocalFireDepartment,
+                        contentDescription = null,
+                        tint = HogarGoColors.brandOrangeDeep,
+                        modifier = Modifier.size(20.dp),
+                    )
                 }
                 Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
                     Text(
@@ -213,7 +230,12 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
                     ) {
-                        Text("💡", fontSize = 16.sp)
+                        Icon(
+                            imageVector = Icons.Outlined.Lightbulb,
+                            contentDescription = null,
+                            tint = HogarGoColors.primaryText,
+                            modifier = Modifier.size(18.dp),
+                        )
                         Text(
                             text = L10n.tr("Consejo del día de Zori", "Zori's Daily Advice"),
                             fontSize = 15.sp,
@@ -225,7 +247,12 @@ fun HomeScreen(
                         onClick = { adviceViewModel.loadDailyAdvice() },
                         modifier = Modifier.size(28.dp),
                     ) {
-                        Text("🔄", fontSize = 14.sp)
+                        Icon(
+                            imageVector = Icons.Outlined.Refresh,
+                            contentDescription = "Refresh",
+                            tint = HogarGoColors.primaryText,
+                            modifier = Modifier.size(18.dp),
+                        )
                     }
                 }
                 when (val advice = adviceState) {
@@ -274,11 +301,11 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
-                    Text(
-                        "⩖",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = HogarGoColors.primaryText,
+                    Icon(
+                        imageVector = Icons.Outlined.Checklist,
+                        contentDescription = null,
+                        tint = HogarGoColors.primaryText,
+                        modifier = Modifier.size(18.dp),
                     )
                     Text(
                         text = L10n.tr("Próxima Tarea", "Next Task"),
@@ -395,13 +422,13 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             QuickActionCard(
-                icon = "⩖",
+                icon = Icons.Outlined.Checklist,
                 label = L10n.tr("Nueva Tarea", "New Task"),
                 onClick = onNavigateToTasks,
                 modifier = Modifier.weight(1f),
             )
             QuickActionCard(
-                icon = "🧾",
+                icon = Icons.AutoMirrored.Outlined.ReceiptLong,
                 label = L10n.tr("Añadir Gasto", "Add Expense"),
                 onClick = onNavigateToFinance,
                 modifier = Modifier.weight(1f),
@@ -412,13 +439,13 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
             QuickActionCard(
-                icon = "📅",
+                icon = Icons.Outlined.CalendarMonth,
                 label = L10n.tr("Evento", "Event"),
                 onClick = onNavigateToCalendar,
                 modifier = Modifier.weight(1f),
             )
             QuickActionCard(
-                icon = "⋯",
+                icon = Icons.Outlined.MoreHoriz,
                 label = L10n.tr("Más", "More"),
                 onClick = { showMoreSheet = true },
                 modifier = Modifier.weight(1f),
@@ -477,11 +504,11 @@ fun HomeScreen(
                                 .background(Color(0xFFFFDBC9)),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text(
-                                "ⓘ",
-                                fontSize = 18.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = HogarGoColors.primaryText,
+                            Icon(
+                                imageVector = Icons.Outlined.Info,
+                                contentDescription = null,
+                                tint = HogarGoColors.primaryText,
+                                modifier = Modifier.size(22.dp),
                             )
                         }
                         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
@@ -525,7 +552,12 @@ fun HomeScreen(
                                 .background(Color(0xFFFFDBC9)),
                             contentAlignment = Alignment.Center,
                         ) {
-                            Text("👥", fontSize = 18.sp)
+                            Icon(
+                                imageVector = Icons.Outlined.Group,
+                                contentDescription = null,
+                                tint = HogarGoColors.primaryText,
+                                modifier = Modifier.size(22.dp),
+                            )
                         }
                         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             Text(
@@ -552,7 +584,7 @@ fun HomeScreen(
 
 @Composable
 private fun QuickActionCard(
-    icon: String,
+    icon: ImageVector,
     label: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -576,7 +608,12 @@ private fun QuickActionCard(
                     .background(Color(0xFFFFDBC9)),
                 contentAlignment = Alignment.Center,
             ) {
-                Text(icon, fontSize = 20.sp)
+                Icon(
+                    imageVector = icon,
+                    contentDescription = label,
+                    tint = HogarGoColors.primaryText,
+                    modifier = Modifier.size(24.dp),
+                )
             }
             Text(
                 text = label,
