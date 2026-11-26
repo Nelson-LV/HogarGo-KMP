@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hogargo.kmp.db.Task
 import com.hogargo.kmp.household.HouseholdViewModel
+import com.hogargo.kmp.household.notifications.HouseholdNotifier
 import com.hogargo.kmp.tasks.data.TaskRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,15 +15,21 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
+import kotlinx.datetime.Instant
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 
 enum class TaskFilter {
     ALL, PENDING, COMPLETED
 }
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, ExperimentalTime::class)
 class TaskViewModel(
     private val taskRepository: TaskRepository,
     private val householdViewModel: HouseholdViewModel,
+    private val notifier: HouseholdNotifier? = null,
 ) : ViewModel() {
 
     private val _currentFilter = MutableStateFlow(TaskFilter.ALL)
@@ -108,6 +115,39 @@ class TaskViewModel(
 
     fun deleteTask(taskId: String) {
         taskRepository.deleteTask(taskId)
+    }
+
+    fun scheduleDailyStreakReminder() {
+        notifier?.requestPermission()
+        notifier?.scheduleStreakReminder(
+            id = "streak_reminder_8pm",
+            title = "🔥 ¡Mantén tu racha en HogarGo!",
+            body = "Tienes tareas pendientes. Complétalas antes de las 8:00 pm para no perder tu racha.",
+            hour = 20,
+            minute = 0,
+        )
+    }
+
+    fun sendStreakReminderNow() {
+        notifier?.requestPermission()
+        val pending = pendingCount.value
+        val body = if (pending > 0) {
+            "Tienes $pending tarea(s) pendiente(s). ¡Complétalas antes de las 8:00 pm para mantener la racha de tu hogar!"
+        } else {
+            "¡Todas las tareas están al día! Tu racha sigue protegida hoy 🔥"
+        }
+        notifier?.show(
+            id = "streak_reminder_test",
+            title = "🔥 Recordatorio de Racha — HogarGo",
+            body = body,
+        )
+    }
+
+    fun isBefore8PM(): Boolean {
+        val nowMillis = Clock.System.now().toEpochMilliseconds()
+        val currentHour = kotlinx.datetime.Instant.fromEpochMilliseconds(nowMillis)
+            .toLocalDateTime(TimeZone.currentSystemDefault()).hour
+        return currentHour < 20
     }
 
     private fun calculateStreak(tasks: List<Task>): Int {

@@ -44,7 +44,7 @@ fun App(driverFactory: DatabaseDriverFactory, notifier: HouseholdNotifier) {
         HouseholdViewModel(HouseholdRepository(database), SessionStore(database), notifier)
     }
     val taskViewModel = viewModel {
-        TaskViewModel(modules.task, householdViewModel)
+        TaskViewModel(modules.task, householdViewModel, notifier)
     }
 
     val phase by householdViewModel.phase.collectAsState()
