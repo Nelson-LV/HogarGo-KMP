@@ -4,11 +4,25 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Checklist
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Pets
+import androidx.compose.material.icons.filled.Savings
+import androidx.compose.material.icons.outlined.CalendarMonth
+import androidx.compose.material.icons.outlined.CardGiftcard
+import androidx.compose.material.icons.outlined.Checklist
+import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Pets
+import androidx.compose.material.icons.outlined.Savings
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -17,6 +31,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -75,14 +90,50 @@ object Routes {
     const val RENAME_HOUSEHOLD = "profile/household-name"
 }
 
-private data class TopLevel(val route: String, val labelEs: String, val labelEn: String, val emoji: String)
+private data class TopLevel(
+    val route: String,
+    val labelEs: String,
+    val labelEn: String,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector,
+)
 
 private val topLevelDestinations = listOf(
-    TopLevel(Routes.TASKS, "Tareas", "Tasks", "⩖"),
-    TopLevel(Routes.FINANCE, "Finanzas", "Finances", "💰"),
-    TopLevel(Routes.HOME, "Inicio", "Home", "🏠"),
-    TopLevel(Routes.PETS, "Mascotas", "Pet", "🐾"),
-    TopLevel(Routes.CALENDAR, "Calendario", "Calendar", "📅"),
+    TopLevel(
+        route = Routes.TASKS,
+        labelEs = "Tareas",
+        labelEn = "Tasks",
+        selectedIcon = Icons.Filled.Checklist,
+        unselectedIcon = Icons.Outlined.Checklist,
+    ),
+    TopLevel(
+        route = Routes.FINANCE,
+        labelEs = "Finanzas",
+        labelEn = "Finances",
+        selectedIcon = Icons.Filled.Savings,
+        unselectedIcon = Icons.Outlined.Savings,
+    ),
+    TopLevel(
+        route = Routes.HOME,
+        labelEs = "Inicio",
+        labelEn = "Home",
+        selectedIcon = Icons.Filled.Home,
+        unselectedIcon = Icons.Outlined.Home,
+    ),
+    TopLevel(
+        route = Routes.PETS,
+        labelEs = "Mascotas",
+        labelEn = "Pet",
+        selectedIcon = Icons.Filled.Pets,
+        unselectedIcon = Icons.Outlined.Pets,
+    ),
+    TopLevel(
+        route = Routes.CALENDAR,
+        labelEs = "Calendario",
+        labelEn = "Calendar",
+        selectedIcon = Icons.Filled.CalendarMonth,
+        unselectedIcon = Icons.Outlined.CalendarMonth,
+    ),
 )
 
 /** Bienvenida y hojas de acceso (sin sesion abierta). */
@@ -148,7 +199,11 @@ fun AppNavHost(
                         },
                         actions = {
                             IconButton(onClick = { navController.navigateTopLevel(Routes.PETS) }) {
-                                Text("🎁", fontSize = 20.sp)
+                                Icon(
+                                    imageVector = Icons.Outlined.CardGiftcard,
+                                    contentDescription = "Zori",
+                                    tint = HogarGoColors.primaryText,
+                                )
                             }
                         },
                         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = HogarGoColors.background),
@@ -168,13 +223,34 @@ fun AppNavHost(
         },
         bottomBar = {
             if (isTopLevel) {
-                NavigationBar {
+                NavigationBar(
+                    containerColor = HogarGoColors.surfaceContainerLow,
+                ) {
                     topLevelDestinations.forEach { dest ->
+                        val selected = currentRoute == dest.route
                         NavigationBarItem(
-                            selected = currentRoute == dest.route,
+                            selected = selected,
                             onClick = { navController.navigateTopLevel(dest.route) },
-                            icon = { Text(dest.emoji) },
-                            label = { Text(L10n.tr(dest.labelEs, dest.labelEn)) },
+                            icon = {
+                                Icon(
+                                    imageVector = if (selected) dest.selectedIcon else dest.unselectedIcon,
+                                    contentDescription = L10n.tr(dest.labelEs, dest.labelEn),
+                                )
+                            },
+                            label = {
+                                Text(
+                                    text = L10n.tr(dest.labelEs, dest.labelEn),
+                                    fontSize = 11.sp,
+                                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                                )
+                            },
+                            colors = NavigationBarItemDefaults.colors(
+                                indicatorColor = HogarGoColors.brandOrangeContainer,
+                                selectedIconColor = HogarGoColors.primaryText,
+                                selectedTextColor = HogarGoColors.primaryText,
+                                unselectedIconColor = HogarGoColors.secondaryText,
+                                unselectedTextColor = HogarGoColors.secondaryText,
+                            ),
                         )
                     }
                 }
