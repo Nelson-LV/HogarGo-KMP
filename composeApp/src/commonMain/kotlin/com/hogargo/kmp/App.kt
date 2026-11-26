@@ -32,15 +32,21 @@ import com.hogargo.kmp.household.ui.HogarGoColors
 import com.hogargo.kmp.navigation.AppNavHost
 import com.hogargo.kmp.navigation.LoadingScreen
 import com.hogargo.kmp.navigation.WelcomeNavHost
+import com.hogargo.kmp.tasks.ui.TaskViewModel
 import com.hogargo.kmp.ui.theme.HogarGoTheme
 
 @Composable
 fun App(driverFactory: DatabaseDriverFactory, notifier: HouseholdNotifier) {
     val database = remember { HogarGoDatabase(driverFactory.createDriver()) }
     val modules = remember { AppModules(database) }
+
     val householdViewModel = viewModel {
         HouseholdViewModel(HouseholdRepository(database), SessionStore(database), notifier)
     }
+    val taskViewModel = viewModel {
+        TaskViewModel(modules.task, householdViewModel, notifier)
+    }
+
     val phase by householdViewModel.phase.collectAsState()
     val snackbar = remember { SnackbarHostState() }
 
@@ -57,7 +63,9 @@ fun App(driverFactory: DatabaseDriverFactory, notifier: HouseholdNotifier) {
                 SessionPhase.Loading -> LoadingScreen()
                 SessionPhase.Welcome -> WelcomeNavHost(householdViewModel)
                 // La clave por hogar evita mezclar datos entre hogares.
-                is SessionPhase.SignedIn -> key(current.householdId) { AppNavHost(modules, householdViewModel, current.householdId) }
+                is SessionPhase.SignedIn -> key(current.householdId) {
+                    AppNavHost(modules, householdViewModel, current.householdId, taskViewModel)
+                }
             }
             SnackbarHost(
                 hostState = snackbar,

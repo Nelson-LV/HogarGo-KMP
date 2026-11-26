@@ -1,0 +1,72 @@
+-- Tabla de Tareas del Hogar (Modulo de Tareas y Racha por Jhonatan Palacios)
+
+CREATE TABLE Task (
+    id TEXT NOT NULL PRIMARY KEY,
+    householdId TEXT NOT NULL,
+    title TEXT NOT NULL,
+    category TEXT NOT NULL,
+    assignedMemberId TEXT NOT NULL DEFAULT '',
+    assignedMemberName TEXT NOT NULL,
+    assignedToOther INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    coinReward INTEGER NOT NULL DEFAULT 10,
+    dueDate TEXT NOT NULL,
+    dueTime TEXT NOT NULL,
+    isCompleted INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0,
+    completedAt INTEGER,
+    createdAt INTEGER NOT NULL
+);
+
+CREATE INDEX tasks_household_idx ON Task(householdId);
+
+-- Consultas de Tareas
+
+tasksByHousehold:
+SELECT * FROM Task
+WHERE householdId = ?
+ORDER BY isCompleted ASC, dueDate ASC, dueTime ASC;
+
+pendingTasksByHousehold:
+SELECT * FROM Task
+WHERE householdId = ? AND isCompleted = 0
+ORDER BY dueDate ASC, dueTime ASC;
+
+completedTasksByHousehold:
+SELECT * FROM Task
+WHERE householdId = ? AND isCompleted = 1
+ORDER BY completedAt DESC;
+
+taskById:
+SELECT * FROM Task
+WHERE id = ?;
+
+insertTask:
+INSERT INTO Task(
+    id, householdId, title, category, assignedMemberId,
+    assignedMemberName, assignedToOther, coinReward,
+    dueDate, dueTime, isCompleted, completedAt, createdAt
+) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+markTaskCompleted:
+UPDATE Task
+SET isCompleted = 1, completedAt = ?
+WHERE id = ?;
+
+deleteTask:
+DELETE FROM Task
+WHERE id = ?;
+
+deleteTasksByHousehold:
+DELETE FROM Task
+WHERE householdId = ?;
+
+countPendingTasks:
+SELECT COUNT(*) FROM Task
+WHERE householdId = ? AND isCompleted = 0;
+
+countCompletedTasks:
+SELECT COUNT(*) FROM Task
+WHERE householdId = ? AND isCompleted = 1;
+
+earnedCoins:
+SELECT COALESCE(SUM(coinReward), 0) FROM Task
+WHERE householdId = ? AND isCompleted = 1;

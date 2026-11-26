@@ -51,6 +51,37 @@ actual class HouseholdNotifier(
         manager.notify(id.hashCode(), notification)
     }
 
+    actual fun scheduleStreakReminder(id: String, title: String, body: String, hour: Int, minute: Int) {
+        if (!hasPermission()) return
+        val alarmManager = context.getSystemService(android.app.AlarmManager::class.java) ?: return
+        val intent = Intent(context, StreakReminderReceiver::class.java).apply {
+            putExtra(StreakReminderReceiver.EXTRA_ID, id)
+            putExtra(StreakReminderReceiver.EXTRA_TITLE, title)
+            putExtra(StreakReminderReceiver.EXTRA_BODY, body)
+        }
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            id.hashCode(),
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        val calendar = java.util.Calendar.getInstance().apply {
+            set(java.util.Calendar.HOUR_OF_DAY, hour)
+            set(java.util.Calendar.MINUTE, minute)
+            set(java.util.Calendar.SECOND, 0)
+            set(java.util.Calendar.MILLISECOND, 0)
+            if (timeInMillis <= System.currentTimeMillis()) {
+                add(java.util.Calendar.DAY_OF_YEAR, 1)
+            }
+        }
+        alarmManager.setInexactRepeating(
+            android.app.AlarmManager.RTC_WAKEUP,
+            calendar.timeInMillis,
+            android.app.AlarmManager.INTERVAL_DAY,
+            pendingIntent,
+        )
+    }
+
     private fun hasPermission(): Boolean =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
             context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED

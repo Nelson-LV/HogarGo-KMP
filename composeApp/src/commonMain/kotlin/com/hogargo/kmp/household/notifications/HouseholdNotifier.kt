@@ -14,6 +14,9 @@ expect class HouseholdNotifier {
 
     /** Si no hay permiso no se muestra nada; el aviso igual queda como entregado. */
     fun show(id: String, title: String, body: String)
+
+    /** Programa un recordatorio recurrente para la racha diaria a la hora especificada (por defecto 8:00 PM). */
+    fun scheduleStreakReminder(id: String, title: String, body: String, hour: Int = 20, minute: Int = 0)
 }
 
 /** Titulo y cuerpo del aviso, o null si no se debe notificar (REMOVED o tipo desconocido). */

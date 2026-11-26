@@ -53,17 +53,19 @@ fun ScreenHeader(title: String, subtitle: String, centered: Boolean = false) {
 fun PillButton(
     text: String,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
     container: Color = HogarGoColors.brandOrangeDeep,
     content: Color = Color.White,
     enabled: Boolean = true,
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .clip(CircleShape)
             .background(if (enabled) container else container.copy(alpha = 0.4f))
             .then(if (enabled) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(horizontal = 16.dp, vertical = 9.dp),
         verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
     ) {
         Text(text, color = content, fontSize = 14.sp, fontWeight = FontWeight.SemiBold)
     }
