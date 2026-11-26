@@ -6,6 +6,7 @@ import com.hogargo.kmp.calendar.CalendarRepository
 import com.hogargo.kmp.calendar.CalendarRules
 import com.hogargo.kmp.core.todayLocal
 import com.hogargo.kmp.db.CalendarEvent
+import com.hogargo.kmp.db.SavingsGoal
 import com.hogargo.kmp.finance.FinanceRepository
 import com.hogargo.kmp.finance.FinanceRules
 import com.hogargo.kmp.pet.PetRepository
@@ -24,6 +25,7 @@ data class HomeUiState(
     val petLevel: Int = 1,
     val coins: Int = 0,
     val equippedIds: Set<String> = emptySet(),
+    val firstGoal: SavingsGoal? = null,
 )
 
 class HomeViewModel(
@@ -35,12 +37,17 @@ class HomeViewModel(
 ) : ViewModel() {
 
     val state: StateFlow<HomeUiState> = combine(
-        finance.observeExpenses(householdId),
-        calendar.observeEvents(householdId),
-        calendar.observeBills(householdId),
-        pet.observeState(householdId),
-        pet.observeWardrobe(householdId),
-    ) { expenses, events, bills, petState, wardrobe ->
+        combine(
+            finance.observeExpenses(householdId),
+            calendar.observeEvents(householdId),
+            calendar.observeBills(householdId),
+        ) { expenses, events, bills -> Triple(expenses, events, bills) },
+        combine(
+            pet.observeState(householdId),
+            pet.observeWardrobe(householdId),
+            finance.observeGoals(householdId),
+        ) { petState, wardrobe, goals -> Triple(petState, wardrobe, goals) },
+    ) { (expenses, events, bills), (petState, wardrobe, goals) ->
         val now = today()
         HomeUiState(
             monthSpent = FinanceRules.summarize(expenses, now).total,
@@ -49,6 +56,7 @@ class HomeViewModel(
             petLevel = PetRules.level(petState?.careActions ?: 0),
             coins = pet.coins(householdId),
             equippedIds = wardrobe.filter { it.owned && it.equipped }.map { it.itemId }.toSet(),
+            firstGoal = goals.firstOrNull(),
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HomeUiState())
 }

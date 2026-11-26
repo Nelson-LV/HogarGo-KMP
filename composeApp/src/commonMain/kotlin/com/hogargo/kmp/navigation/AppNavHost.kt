@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -76,9 +78,9 @@ object Routes {
 private data class TopLevel(val route: String, val labelEs: String, val labelEn: String, val emoji: String)
 
 private val topLevelDestinations = listOf(
+    TopLevel(Routes.TASKS, "Tareas", "Tasks", "⩖"),
+    TopLevel(Routes.FINANCE, "Finanzas", "Finances", "💰"),
     TopLevel(Routes.HOME, "Inicio", "Home", "🏠"),
-    TopLevel(Routes.TASKS, "Tareas", "Tasks", "📝"),
-    TopLevel(Routes.FINANCE, "Finanzas", "Finance", "💰"),
     TopLevel(Routes.PETS, "Mascotas", "Pet", "🐾"),
     TopLevel(Routes.CALENDAR, "Calendario", "Calendar", "📅"),
 )
@@ -127,15 +129,39 @@ fun AppNavHost(
     Scaffold(
         topBar = {
             if (isTopLevel) {
-                TopAppBar(
-                    title = { Text(household?.name.orEmpty(), fontWeight = FontWeight.Bold, color = HogarGoColors.primaryText) },
-                    actions = {
-                        IconButton(onClick = { navController.navigate(Routes.PROFILE) }) {
-                            MemberAvatar(me?.name.orEmpty(), 36.dp)
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(containerColor = HogarGoColors.background),
-                )
+                if (currentRoute == Routes.HOME) {
+                    CenterAlignedTopAppBar(
+                        title = {
+                            Text(
+                                "HogarGo",
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 20.sp,
+                                color = HogarGoColors.primaryText,
+                            )
+                        },
+                        navigationIcon = {
+                            IconButton(onClick = { navController.navigate(Routes.PROFILE) }) {
+                                MemberAvatar(me?.name.orEmpty().ifEmpty { "J" }, 36.dp)
+                            }
+                        },
+                        actions = {
+                            IconButton(onClick = { navController.navigate(Routes.PETS) }) {
+                                Text("🎁", fontSize = 20.sp)
+                            }
+                        },
+                        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(containerColor = HogarGoColors.background),
+                    )
+                } else {
+                    TopAppBar(
+                        title = { Text(household?.name.orEmpty(), fontWeight = FontWeight.Bold, color = HogarGoColors.primaryText) },
+                        actions = {
+                            IconButton(onClick = { navController.navigate(Routes.PROFILE) }) {
+                                MemberAvatar(me?.name.orEmpty(), 36.dp)
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(containerColor = HogarGoColors.background),
+                    )
+                }
             }
         },
         bottomBar = {
@@ -161,11 +187,17 @@ fun AppNavHost(
         ) {
             composable(Routes.HOME) {
                 HomeScreen(
-                    viewModel(key = "home-$householdId") {
+                    viewModel = viewModel(key = "home-$householdId") {
                         HomeViewModel(modules.finance, modules.calendar, modules.pet, householdId)
                     },
+                    householdViewModel = householdViewModel,
                     taskViewModel = taskViewModel,
+                    onNavigateToTasks = { navController.navigate(Routes.TASKS) },
+                    onNavigateToFinance = { navController.navigate(Routes.FINANCE) },
+                    onNavigateToCalendar = { navController.navigate(Routes.CALENDAR) },
+                    onNavigateToPet = { navController.navigate(Routes.PETS) },
                     onOpenAbout = { navController.navigate(Routes.ABOUT) },
+                    onOpenProfile = { navController.navigate(Routes.PROFILE) },
                 )
             }
             composable(Routes.TASKS) {
