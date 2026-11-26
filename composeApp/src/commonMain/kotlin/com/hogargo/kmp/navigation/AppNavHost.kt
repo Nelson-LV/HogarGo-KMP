@@ -164,6 +164,7 @@ fun AppNavHost(
                     viewModel(key = "home-$householdId") {
                         HomeViewModel(modules.finance, modules.calendar, modules.pet, householdId)
                     },
+                    taskViewModel = taskViewModel,
                     onOpenAbout = { navController.navigate(Routes.ABOUT) },
                 )
             }

@@ -58,6 +58,7 @@ fun TasksScreen(
     val members by householdViewModel.members.collectAsState()
     val streakDays by taskViewModel.streakDays.collectAsState()
     val totalCoins by taskViewModel.totalCoins.collectAsState()
+    val pendingCount by taskViewModel.pendingCount.collectAsState()
     val filter by taskViewModel.currentFilter.collectAsState()
     var showNewTaskDialog by remember { mutableStateOf(false) }
 
@@ -84,6 +85,31 @@ fun TasksScreen(
 
         // Banner de Racha y Monedas
         StreakBanner(streakDays = streakDays, totalCoins = totalCoins)
+
+        if (pendingCount > 0) {
+            Spacer(Modifier.height(10.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(HogarGoColors.surfaceContainerLow)
+                    .padding(horizontal = 12.dp, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = "⏰ $pendingCount pendiente(s) antes de las 8:00 PM",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = HogarGoColors.secondaryText,
+                )
+                IconButton(
+                    onClick = { taskViewModel.sendStreakReminderNow() },
+                    modifier = Modifier.size(28.dp),
+                ) {
+                    Text("🔔", style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        }
 
         Spacer(Modifier.height(16.dp))
 

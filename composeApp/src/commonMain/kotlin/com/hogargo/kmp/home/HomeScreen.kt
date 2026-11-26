@@ -40,6 +40,7 @@ import com.hogargo.kmp.l10n.petCoinsBalance
 import com.hogargo.kmp.l10n.petLevel
 import com.hogargo.kmp.l10n.shortDate
 import com.hogargo.kmp.pet.ui.ZoriAvatar
+import com.hogargo.kmp.tasks.ui.TaskViewModel
 import com.hogargo.kmp.ui.common.PillButton
 import com.hogargo.kmp.ui.common.ScreenHeader
 import kotlinx.datetime.LocalDate
@@ -48,6 +49,7 @@ import kotlinx.datetime.LocalDate
 fun HomeScreen(
     viewModel: HomeViewModel,
     adviceViewModel: DailyAdviceViewModel = viewModel { DailyAdviceViewModel() },
+    taskViewModel: TaskViewModel? = null,
     onOpenAbout: () -> Unit,
 ) {
     val state by viewModel.state.collectAsState()
@@ -157,6 +159,68 @@ fun HomeScreen(
                             L10n.tr("📱 Modo sin conexión (consejo local)", "📱 Offline mode (local advice)"),
                             fontSize = 11.sp,
                             color = HogarGoColors.secondaryText,
+                        )
+                    }
+                }
+            }
+        }
+
+        // Racha del Hogar y Recordatorio 8:00 PM
+        if (taskViewModel != null) {
+            val streakDays by taskViewModel.streakDays.collectAsState()
+            val pendingCount by taskViewModel.pendingCount.collectAsState()
+            HogarCard {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                    ) {
+                        Text(
+                            "🔥 " + L10n.tr("Racha del Hogar", "Home Streak"),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = HogarGoColors.primaryText,
+                        )
+                        Text(
+                            "$streakDays " + L10n.tr("hechas", "done"),
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = HogarGoColors.brandOrangeDeep,
+                        )
+                    }
+                    Text(
+                        if (pendingCount > 0) {
+                            L10n.tr(
+                                "Tienes $pendingCount tarea(s) pendiente(s). Complétalas antes de las 8:00 PM para proteger tu racha.",
+                                "You have $pendingCount pending task(s). Complete them before 8:00 PM to keep your streak.",
+                            )
+                        } else {
+                            L10n.tr(
+                                "¡Todas las tareas están al día! Tu racha sigue activa hoy 🔥",
+                                "All tasks are up to date! Your streak is safe today 🔥",
+                            )
+                        },
+                        fontSize = 13.sp,
+                        color = HogarGoColors.secondaryText,
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    ) {
+                        PillButton(
+                            text = L10n.tr("⏰ Activar 8:00 PM", "⏰ Set 8:00 PM"),
+                            onClick = { taskViewModel.scheduleDailyStreakReminder() },
+                            container = HogarGoColors.brandOrangeContainer,
+                            content = HogarGoColors.brandOrangeDeep,
+                            modifier = Modifier.weight(1f),
+                        )
+                        PillButton(
+                            text = L10n.tr("🔔 Probar aviso", "🔔 Test notification"),
+                            onClick = { taskViewModel.sendStreakReminderNow() },
+                            container = HogarGoColors.surfaceContainerLow,
+                            content = HogarGoColors.primaryText,
+                            modifier = Modifier.weight(1f),
                         )
                     }
                 }
