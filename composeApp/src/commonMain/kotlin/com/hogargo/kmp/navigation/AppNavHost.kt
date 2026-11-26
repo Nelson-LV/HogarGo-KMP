@@ -145,7 +145,7 @@ fun AppNavHost(
                             }
                         },
                         actions = {
-                            IconButton(onClick = { navController.navigate(Routes.PETS) }) {
+                            IconButton(onClick = { navController.navigateTopLevel(Routes.PETS) }) {
                                 Text("🎁", fontSize = 20.sp)
                             }
                         },
@@ -192,10 +192,10 @@ fun AppNavHost(
                     },
                     householdViewModel = householdViewModel,
                     taskViewModel = taskViewModel,
-                    onNavigateToTasks = { navController.navigate(Routes.TASKS) },
-                    onNavigateToFinance = { navController.navigate(Routes.FINANCE) },
-                    onNavigateToCalendar = { navController.navigate(Routes.CALENDAR) },
-                    onNavigateToPet = { navController.navigate(Routes.PETS) },
+                    onNavigateToTasks = { navController.navigateTopLevel(Routes.TASKS) },
+                    onNavigateToFinance = { navController.navigateTopLevel(Routes.FINANCE) },
+                    onNavigateToCalendar = { navController.navigateTopLevel(Routes.CALENDAR) },
+                    onNavigateToPet = { navController.navigateTopLevel(Routes.PETS) },
                     onOpenAbout = { navController.navigate(Routes.ABOUT) },
                     onOpenProfile = { navController.navigate(Routes.PROFILE) },
                 )
@@ -230,10 +230,20 @@ fun AppNavHost(
     }
 }
 
-private fun NavHostController.navigateTopLevel(route: String) = navigate(route) {
-    popUpTo(graph.findStartDestination().id) { saveState = true }
-    launchSingleTop = true
-    restoreState = true
+private fun NavHostController.navigateTopLevel(route: String) {
+    if (currentDestination?.route == route) return
+    val startDestId = graph.findStartDestination().id
+    if (route == Routes.HOME) {
+        popBackStack(startDestId, inclusive = false)
+    } else {
+        navigate(route) {
+            popUpTo(startDestId) {
+                saveState = true
+            }
+            launchSingleTop = true
+            restoreState = true
+        }
+    }
 }
 
 /** Fondo vacio mientras se restaura la sesion (para no parpadear). */

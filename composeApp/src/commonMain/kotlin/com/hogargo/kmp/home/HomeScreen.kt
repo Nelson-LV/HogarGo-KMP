@@ -1,5 +1,6 @@
 package com.hogargo.kmp.home
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +48,7 @@ import com.hogargo.kmp.finance.FinanceRules
 import com.hogargo.kmp.household.HouseholdViewModel
 import com.hogargo.kmp.household.ui.HogarCard
 import com.hogargo.kmp.household.ui.HogarGoColors
+import com.hogargo.kmp.l10n.L10n
 import com.hogargo.kmp.pet.ui.ZoriAvatar
 import com.hogargo.kmp.tasks.ui.TaskViewModel
 
@@ -84,42 +86,53 @@ fun HomeScreen(
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             val displayName = me?.name?.ifBlank { "Jhonatan123" } ?: "Jhonatan123"
             Text(
-                text = "Good morning,\n$displayName!",
+                text = L10n.tr("¡Buenos días,\n$displayName!", "Good morning,\n$displayName!"),
                 fontSize = 28.sp,
                 fontWeight = FontWeight.Bold,
                 color = HogarGoColors.primaryText,
                 lineHeight = 34.sp,
             )
             Text(
-                text = "Let's make today a cozy day.",
+                text = L10n.tr("Hagamos de hoy un día acogedor.", "Let's make today a cozy day."),
                 fontSize = 14.sp,
                 color = HogarGoColors.secondaryText,
             )
         }
 
-        // 2. Chip de Daily Energy (Racha)
+        // 2. Chip estético de Daily Energy (Racha y recordatorio)
         Surface(
-            shape = RoundedCornerShape(16.dp),
-            color = Color(0xFFF5E3DB),
-            modifier = Modifier.clickable {
-                taskViewModel?.scheduleDailyStreakReminder()
-            },
+            shape = RoundedCornerShape(20.dp),
+            color = HogarGoColors.surfaceContainer,
+            border = BorderStroke(1.dp, HogarGoColors.borderSubtle.copy(alpha = 0.5f)),
+            modifier = Modifier
+                .clip(RoundedCornerShape(20.dp))
+                .clickable {
+                    taskViewModel?.scheduleDailyStreakReminder()
+                },
         ) {
             Row(
                 modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Text("🔥", fontSize = 18.sp)
-                Column {
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .clip(CircleShape)
+                        .background(HogarGoColors.brandOrangeContainer),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text("🔥", fontSize = 16.sp)
+                }
+                Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
                     Text(
-                        "Daily Energy",
+                        text = L10n.tr("Energía Diaria", "Daily Energy"),
                         fontSize = 13.sp,
                         fontWeight = FontWeight.Bold,
                         color = HogarGoColors.primaryText,
                     )
                     Text(
-                        "$streakDays/7 day streak",
+                        text = L10n.tr("Racha de $streakDays/7 días", "$streakDays/7 day streak"),
                         fontSize = 11.sp,
                         color = HogarGoColors.secondaryText,
                     )
@@ -139,19 +152,22 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     Text(
-                        "Zori is resting.",
+                        text = L10n.tr("Zori está descansando.", "Zori is resting."),
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold,
                         color = HogarGoColors.primaryText,
                     )
                     Text(
-                        "Complete tasks to wake Zori up and earn today's rewards!",
+                        text = L10n.tr(
+                            "¡Completa tareas para despertar a Zori y ganar las recompensas de hoy!",
+                            "Complete tasks to wake Zori up and earn today's rewards!",
+                        ),
                         fontSize = 12.sp,
                         color = HogarGoColors.secondaryText,
                         lineHeight = 16.sp,
                     )
                     Text(
-                        "Start Day",
+                        text = L10n.tr("Comenzar Día", "Start Day"),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = HogarGoColors.primaryText,
@@ -182,7 +198,7 @@ fun HomeScreen(
                     ) {
                         Text("💡", fontSize = 16.sp)
                         Text(
-                            "Consejo del día de Zori",
+                            text = L10n.tr("Consejo del día de Zori", "Zori's Daily Advice"),
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Bold,
                             color = HogarGoColors.primaryText,
@@ -207,7 +223,7 @@ fun HomeScreen(
                                 color = HogarGoColors.brandOrangeDeep,
                             )
                             Text(
-                                "Obteniendo consejo...",
+                                text = L10n.tr("Obteniendo consejo...", "Fetching advice..."),
                                 fontSize = 12.sp,
                                 color = HogarGoColors.secondaryText,
                             )
@@ -248,7 +264,7 @@ fun HomeScreen(
                         color = HogarGoColors.primaryText,
                     )
                     Text(
-                        "Next Task",
+                        text = L10n.tr("Próxima Tarea", "Next Task"),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = HogarGoColors.primaryText,
@@ -282,7 +298,7 @@ fun HomeScreen(
                                     color = HogarGoColors.primaryText,
                                 )
                                 Text(
-                                    text = "${nextTask.category} • Today • ${nextTask.dueTime}",
+                                    text = "${nextTask.category} • ${L10n.tr("Hoy", "Today")} • ${nextTask.dueTime}",
                                     fontSize = 12.sp,
                                     color = HogarGoColors.secondaryText,
                                 )
@@ -298,7 +314,7 @@ fun HomeScreen(
                             .padding(14.dp),
                     ) {
                         Text(
-                            text = "No pending tasks. Great job!",
+                            text = L10n.tr("¡No hay tareas pendientes! Gran trabajo.", "No pending tasks. Great job!"),
                             fontSize = 13.sp,
                             color = HogarGoColors.secondaryText,
                         )
@@ -313,12 +329,12 @@ fun HomeScreen(
             if (goal == null) {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                     Text(
-                        "You don't have a savings goal yet.",
+                        text = L10n.tr("Aún no tienes una meta de ahorro.", "You don't have a savings goal yet."),
                         fontSize = 13.sp,
                         color = HogarGoColors.secondaryText,
                     )
                     Text(
-                        "Create goal",
+                        text = L10n.tr("Crear meta", "Create goal"),
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = HogarGoColors.primaryText,
@@ -363,13 +379,13 @@ fun HomeScreen(
         ) {
             QuickActionCard(
                 icon = "⩖",
-                label = "New Task",
+                label = L10n.tr("Nueva Tarea", "New Task"),
                 onClick = onNavigateToTasks,
                 modifier = Modifier.weight(1f),
             )
             QuickActionCard(
                 icon = "🧾",
-                label = "Add Expense",
+                label = L10n.tr("Añadir Gasto", "Add Expense"),
                 onClick = onNavigateToFinance,
                 modifier = Modifier.weight(1f),
             )
@@ -380,13 +396,13 @@ fun HomeScreen(
         ) {
             QuickActionCard(
                 icon = "📅",
-                label = "Event",
+                label = L10n.tr("Evento", "Event"),
                 onClick = onNavigateToCalendar,
                 modifier = Modifier.weight(1f),
             )
             QuickActionCard(
                 icon = "⋯",
-                label = "More",
+                label = L10n.tr("Más", "More"),
                 onClick = { showMoreSheet = true },
                 modifier = Modifier.weight(1f),
             )
@@ -415,7 +431,7 @@ fun HomeScreen(
                 verticalArrangement = Arrangement.spacedBy(12.dp),
             ) {
                 Text(
-                    "More",
+                    text = L10n.tr("Más", "More"),
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     color = HogarGoColors.primaryText,
@@ -453,13 +469,16 @@ fun HomeScreen(
                         }
                         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             Text(
-                                "About HogarGo",
+                                text = L10n.tr("Acerca de HogarGo", "About HogarGo"),
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = HogarGoColors.primaryText,
                             )
                             Text(
-                                "App description and team credits",
+                                text = L10n.tr(
+                                    "Descripción de la app y créditos",
+                                    "App description and team credits",
+                                ),
                                 fontSize = 12.sp,
                                 color = HogarGoColors.secondaryText,
                             )
@@ -493,13 +512,16 @@ fun HomeScreen(
                         }
                         Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             Text(
-                                "Integrantes del Hogar",
+                                text = L10n.tr("Integrantes del Hogar", "Household Members"),
                                 fontSize = 15.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = HogarGoColors.primaryText,
                             )
                             Text(
-                                "Ver los miembros registrados de la familia",
+                                text = L10n.tr(
+                                    "Ver los miembros registrados de la familia",
+                                    "View registered family members",
+                                ),
                                 fontSize = 12.sp,
                                 color = HogarGoColors.secondaryText,
                             )
