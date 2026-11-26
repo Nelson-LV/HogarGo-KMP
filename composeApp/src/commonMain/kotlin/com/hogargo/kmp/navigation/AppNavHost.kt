@@ -211,7 +211,8 @@ fun AppNavHost(
                 } else {
                     TopAppBar(
                         title = { Text(household?.name.orEmpty(), fontWeight = FontWeight.Bold, color = HogarGoColors.primaryText) },
-                        actions = {
+                        // Perfil arriba a la izquierda, igual que en Inicio.
+                        navigationIcon = {
                             IconButton(onClick = { navController.navigate(Routes.PROFILE) }) {
                                 MemberAvatar(me?.name.orEmpty(), 36.dp)
                             }
