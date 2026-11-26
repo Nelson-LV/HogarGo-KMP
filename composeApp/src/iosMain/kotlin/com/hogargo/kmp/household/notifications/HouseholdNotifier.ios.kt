@@ -44,6 +44,25 @@ actual class HouseholdNotifier {
         )
     }
 
+    actual fun scheduleStreakReminder(id: String, title: String, body: String, hour: Int, minute: Int) {
+        val content = UNMutableNotificationContent().apply {
+            setTitle(title)
+            setBody(body)
+            setSound(UNNotificationSound.defaultSound())
+            setThreadIdentifier(THREAD_ID)
+        }
+        val dateComponents = platform.Foundation.NSDateComponents().apply {
+            setHour(hour.toLong())
+            setMinute(minute.toLong())
+        }
+        val trigger = platform.UserNotifications.UNCalendarNotificationTrigger.triggerWithDateMatchingComponents(
+            dateComponents,
+            repeats = true,
+        )
+        val request = UNNotificationRequest.requestWithIdentifier(id, content, trigger)
+        center.addNotificationRequest(request, withCompletionHandler = null)
+    }
+
     private companion object {
         const val THREAD_ID = "household_updates"
     }
