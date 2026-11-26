@@ -71,6 +71,7 @@ fun HomeScreen(
     val me by householdViewModel?.me?.collectAsState() ?: remember { mutableStateOf(null) }
     val tasks by taskViewModel?.tasks?.collectAsState() ?: remember { mutableStateOf(emptyList<Task>()) }
     val streakDays by taskViewModel?.streakDays?.collectAsState() ?: remember { mutableStateOf(0) }
+    val completedCount by taskViewModel?.completedCount?.collectAsState() ?: remember { mutableStateOf(0L) }
 
     var showMoreSheet by remember { mutableStateOf(false) }
 
@@ -140,7 +141,8 @@ fun HomeScreen(
             }
         }
 
-        // 3. Card Zori is resting
+        // 3. Card Zori is resting / awake
+        val isAwake = completedCount > 0
         HogarCard(background = HogarGoColors.surfaceContainer) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -152,22 +154,37 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
                     Text(
-                        text = L10n.tr("Zori está descansando.", "Zori is resting."),
+                        text = if (isAwake) {
+                            L10n.tr("¡Zori está feliz y despierto! ✨", "Zori is awake and happy! ✨")
+                        } else {
+                            L10n.tr("Zori está descansando.", "Zori is resting.")
+                        },
                         fontSize = 17.sp,
                         fontWeight = FontWeight.Bold,
                         color = HogarGoColors.primaryText,
                     )
                     Text(
-                        text = L10n.tr(
-                            "¡Completa tareas para despertar a Zori y ganar las recompensas de hoy!",
-                            "Complete tasks to wake Zori up and earn today's rewards!",
-                        ),
+                        text = if (isAwake) {
+                            L10n.tr(
+                                "¡Completaron tareas hoy! Zori tiene energía y el hogar gana recompensas.",
+                                "Tasks were completed today! Zori is full of energy and earning rewards.",
+                            )
+                        } else {
+                            L10n.tr(
+                                "¡Completa tareas para despertar a Zori y ganar las recompensas de hoy!",
+                                "Complete tasks to wake Zori up and earn today's rewards!",
+                            )
+                        },
                         fontSize = 12.sp,
                         color = HogarGoColors.secondaryText,
                         lineHeight = 16.sp,
                     )
                     Text(
-                        text = L10n.tr("Comenzar Día", "Start Day"),
+                        text = if (isAwake) {
+                            L10n.tr("Ver Tareas", "View Tasks")
+                        } else {
+                            L10n.tr("Comenzar Día", "Start Day")
+                        },
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Bold,
                         color = HogarGoColors.primaryText,

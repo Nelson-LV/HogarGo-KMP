@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import com.hogargo.kmp.pet.PetRepository
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
@@ -30,6 +31,7 @@ class TaskViewModel(
     private val taskRepository: TaskRepository,
     private val householdViewModel: HouseholdViewModel,
     private val notifier: HouseholdNotifier? = null,
+    private val petRepository: PetRepository? = null,
 ) : ViewModel() {
 
     private val _currentFilter = MutableStateFlow(TaskFilter.ALL)
@@ -110,6 +112,10 @@ class TaskViewModel(
     fun toggleTaskCompleted(task: Task) {
         if (!task.isCompleted) {
             taskRepository.markTaskCompleted(task.id)
+            val householdId = activeHouseholdId.value
+            if (!householdId.isNullOrEmpty()) {
+                petRepository?.boostHappinessOnTaskCompleted(householdId)
+            }
         }
     }
 

@@ -117,7 +117,9 @@ fun AppNavHost(
     modules: AppModules,
     householdViewModel: HouseholdViewModel,
     householdId: String,
-    taskViewModel: TaskViewModel = viewModel { TaskViewModel(modules.task, householdViewModel) },
+    taskViewModel: TaskViewModel = viewModel {
+        TaskViewModel(modules.task, householdViewModel, petRepository = modules.pet)
+    },
 ) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()

@@ -66,3 +66,7 @@ WHERE householdId = ? AND isCompleted = 0;
 countCompletedTasks:
 SELECT COUNT(*) FROM Task
 WHERE householdId = ? AND isCompleted = 1;
+
+earnedCoins:
+SELECT COALESCE(SUM(coinReward), 0) FROM Task
+WHERE householdId = ? AND isCompleted = 1;
