@@ -98,7 +98,7 @@ fun PetScreen(viewModel: PetViewModel) {
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     PillButton(L10n.petFeed, onClick = viewModel::feed)
-                    PillButton(L10n.petPlay, onClick = viewModel::play, container = HogarGoColors.brandOrange, content = HogarGoColors.primaryText)
+                    PillButton(L10n.petPlay, onClick = viewModel::play, container = HogarGoColors.brandOrange, content = HogarGoColors.onBrandOrange)
                     PillButton(
                         L10n.petDecorate,
                         onClick = { scope.launch { scroll.animateScrollTo(wardrobeTop) } },
@@ -135,7 +135,7 @@ fun PetScreen(viewModel: PetViewModel) {
             Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                     Text(L10n.petWardrobeTitle, fontSize = 18.sp, fontWeight = FontWeight.Bold, color = HogarGoColors.primaryText)
-                    Text(L10n.petCoinsBalance(state.coins), fontWeight = FontWeight.Bold, color = HogarGoColors.brandOrangeDeep)
+                    Text(L10n.petCoinsBalance(state.coins), fontWeight = FontWeight.Bold, color = HogarGoColors.accentText)
                 }
                 Text(L10n.petWardrobeSubtitle, fontSize = 13.sp, color = HogarGoColors.secondaryText)
                 state.items.chunked(2).forEach { pair ->
@@ -203,7 +203,7 @@ private fun ItemCard(card: WardrobeCard, modifier: Modifier, onBuy: () -> Unit, 
         when {
             card.locked -> Text("🔒 " + L10n.petLevelRequired(card.entry.unlockLevel), fontSize = 12.sp, color = HogarGoColors.secondaryText, textAlign = TextAlign.Center)
             card.equipped -> {
-                Text("✓ " + L10n.petEquippedBadge, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = HogarGoColors.brandOrangeDeep)
+                Text("✓ " + L10n.petEquippedBadge, fontSize = 12.sp, fontWeight = FontWeight.Bold, color = HogarGoColors.accentText)
                 PillButton(L10n.petRemove, onClick = onToggle, container = HogarGoColors.surface, content = HogarGoColors.primaryText)
             }
             !card.owned -> PillButton(L10n.petBuy(card.entry.price), onClick = onBuy, enabled = card.canBuy)

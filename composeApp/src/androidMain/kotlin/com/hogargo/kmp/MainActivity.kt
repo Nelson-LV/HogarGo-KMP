@@ -1,5 +1,10 @@
 package com.hogargo.kmp
 
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.SystemBarStyle
+import android.graphics.Color
 import android.Manifest
 import android.os.Build
 import android.os.Bundle
@@ -21,6 +26,19 @@ class MainActivity : ComponentActivity() {
                 notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
         }
-        setContent { App(DatabaseDriverFactory(applicationContext), notifier) }
+        setContent {
+            // Iconos de las barras del sistema legibles en claro y en oscuro.
+            val dark = isSystemInDarkTheme()
+            DisposableEffect(dark) {
+                val style = if (dark) {
+                    SystemBarStyle.dark(Color.TRANSPARENT)
+                } else {
+                    SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
+                }
+                enableEdgeToEdge(statusBarStyle = style, navigationBarStyle = style)
+                onDispose {}
+            }
+            App(DatabaseDriverFactory(applicationContext), notifier)
+        }
     }
 }

@@ -24,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -76,7 +77,7 @@ fun WelcomeScreen(onCreate: () -> Unit, onJoin: () -> Unit, onLogin: () -> Unit)
                 contentPadding = PaddingValues(vertical = 15.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = HogarGoColors.brandOrangeContainer,
-                    contentColor = HogarGoColors.brandOrangeDeep,
+                    contentColor = HogarGoColors.accentText,
                 ),
             ) { Text(L10n.joinHome, fontSize = 16.sp, fontWeight = FontWeight.Bold) }
             TextButton(onClick = onLogin) {
@@ -130,7 +131,7 @@ fun CreateHouseholdScreen(viewModel: HouseholdViewModel, onClose: () -> Unit) {
                     HouseholdCodeBadge(code) { viewModel.showToast(L10n.copied) }
                     Spacer(Modifier.weight(1f))
                     TextButton(onClick = { code = viewModel.suggestCode() }) {
-                        Text(L10n.regenerateCode, color = HogarGoColors.brandOrangeDeep, fontWeight = FontWeight.SemiBold)
+                        Text(L10n.regenerateCode, color = HogarGoColors.accentText, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -225,7 +226,7 @@ fun LoginScreen(viewModel: HouseholdViewModel, onClose: () -> Unit, onForgotCode
             error = error.messageFor(HogarError.Field.CODE),
         )
         TextButton(onClick = onForgotCode) {
-            Text(L10n.forgotCode, fontWeight = FontWeight.SemiBold, color = HogarGoColors.brandOrangeDeep)
+            Text(L10n.forgotCode, fontWeight = FontWeight.SemiBold, color = HogarGoColors.accentText)
         }
     }
 }
@@ -284,7 +285,7 @@ private fun RecoveredHomeCard(home: HouseholdRepository.RecoveredHome, onCopied:
                 Button(
                     onClick = onEnter,
                     shape = CircleShape,
-                    colors = ButtonDefaults.buttonColors(containerColor = HogarGoColors.brandOrangeDeep),
+                    colors = ButtonDefaults.buttonColors(containerColor = HogarGoColors.brandOrangeDeep, contentColor = Color.White),
                 ) { Text(L10n.enter, fontWeight = FontWeight.Bold) }
             }
         }

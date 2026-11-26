@@ -37,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -124,7 +125,7 @@ fun TasksScreen(
                 label = { Text("Todas") },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = HogarGoColors.brandOrangeContainer,
-                    selectedLabelColor = HogarGoColors.brandOrangeDeep,
+                    selectedLabelColor = HogarGoColors.accentText,
                 ),
             )
             FilterChip(
@@ -133,7 +134,7 @@ fun TasksScreen(
                 label = { Text("Pendientes") },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = HogarGoColors.brandOrangeContainer,
-                    selectedLabelColor = HogarGoColors.brandOrangeDeep,
+                    selectedLabelColor = HogarGoColors.accentText,
                 ),
             )
             FilterChip(
@@ -142,7 +143,7 @@ fun TasksScreen(
                 label = { Text("Hechas") },
                 colors = FilterChipDefaults.filterChipColors(
                     selectedContainerColor = HogarGoColors.brandOrangeContainer,
-                    selectedLabelColor = HogarGoColors.brandOrangeDeep,
+                    selectedLabelColor = HogarGoColors.accentText,
                 ),
             )
         }
@@ -186,7 +187,7 @@ fun TasksScreen(
             onClick = { showNewTaskDialog = true },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = HogarGoColors.brandOrangeDeep),
+            colors = ButtonDefaults.buttonColors(containerColor = HogarGoColors.brandOrangeDeep, contentColor = Color.White),
         ) {
             Text("+ Proponer nueva tarea", fontWeight = FontWeight.Bold)
         }
@@ -241,7 +242,7 @@ private fun StreakBanner(streakDays: Int, totalCoins: Long) {
                 Text(
                     text = "Racha del hogar",
                     style = MaterialTheme.typography.labelMedium,
-                    color = HogarGoColors.brandOrangeDeep,
+                    color = HogarGoColors.accentText,
                 )
                 Text(
                     text = "$streakDays tareas hechas",
@@ -299,7 +300,7 @@ private fun TaskCard(
                 Text(
                     text = task.category.uppercase(),
                     style = MaterialTheme.typography.labelSmall,
-                    color = HogarGoColors.brandOrangeDeep,
+                    color = HogarGoColors.accentText,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .clip(RoundedCornerShape(6.dp))
@@ -312,7 +313,7 @@ private fun TaskCard(
                     text = "+${task.coinReward} 🪙",
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
-                    color = HogarGoColors.brandOrangeDeep,
+                    color = HogarGoColors.accentText,
                 )
             }
 

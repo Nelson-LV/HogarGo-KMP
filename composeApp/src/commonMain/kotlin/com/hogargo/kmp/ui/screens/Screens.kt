@@ -103,7 +103,7 @@ fun AboutScreen(onBack: () -> Unit) {
                         text = "v1.0.0 • Kotlin Multiplatform",
                         fontSize = 12.sp,
                         fontWeight = FontWeight.SemiBold,
-                        color = HogarGoColors.brandOrangeDeep,
+                        color = HogarGoColors.accentText,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
                     )
                 }
@@ -130,7 +130,7 @@ fun AboutScreen(onBack: () -> Unit) {
                         modifier = Modifier
                             .size(46.dp)
                             .clip(CircleShape)
-                            .background(Color(0xFFFFDBC9)),
+                            .background(HogarGoColors.brandOrangeContainer),
                         contentAlignment = Alignment.Center,
                     ) {
                         Text("🎓", fontSize = 22.sp)

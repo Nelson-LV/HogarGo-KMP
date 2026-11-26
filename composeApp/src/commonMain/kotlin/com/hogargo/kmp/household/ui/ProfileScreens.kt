@@ -329,13 +329,13 @@ private fun EditableTitle(text: String, size: TextUnit, onEdit: () -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         Text(text, fontSize = size, fontWeight = FontWeight.Bold, color = HogarGoColors.primaryText)
-        Text("✎", fontSize = 15.sp, color = HogarGoColors.brandOrangeDeep)
+        Text("✎", fontSize = 15.sp, color = HogarGoColors.accentText)
     }
 }
 
 @Composable
 private fun AdminBadge(size: TextUnit) {
-    Text(L10n.adminBadge, fontSize = size, fontWeight = FontWeight.Bold, color = HogarGoColors.brandOrangeDeep)
+    Text(L10n.adminBadge, fontSize = size, fontWeight = FontWeight.Bold, color = HogarGoColors.accentText)
 }
 
 @Composable

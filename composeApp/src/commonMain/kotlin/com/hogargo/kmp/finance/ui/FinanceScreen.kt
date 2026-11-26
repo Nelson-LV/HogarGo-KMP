@@ -390,7 +390,7 @@ private fun AddExpenseDialog(
         },
         confirmButton = {
             TextButton(onClick = { error = onSave(title, category, amount, date) }) {
-                Text(L10n.financeAdd, color = HogarGoColors.brandOrangeDeep, fontWeight = FontWeight.Bold)
+                Text(L10n.financeAdd, color = HogarGoColors.accentText, fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(L10n.cancel) } },
@@ -426,7 +426,7 @@ private fun GoalDialog(onDismiss: () -> Unit, onSave: (String, String) -> Financ
         },
         confirmButton = {
             TextButton(onClick = { error = onSave(title, target) }) {
-                Text(L10n.financeGoalCreateButton, color = HogarGoColors.brandOrangeDeep, fontWeight = FontWeight.Bold)
+                Text(L10n.financeGoalCreateButton, color = HogarGoColors.accentText, fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(L10n.cancel) } },
@@ -452,7 +452,7 @@ private fun ContributeDialog(goal: SavingsGoal, onDismiss: () -> Unit, onSave: (
         },
         confirmButton = {
             TextButton(onClick = { error = onSave(amount) }) {
-                Text(L10n.financeGoalContributeButton, color = HogarGoColors.brandOrangeDeep, fontWeight = FontWeight.Bold)
+                Text(L10n.financeGoalContributeButton, color = HogarGoColors.accentText, fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = { TextButton(onClick = onDismiss) { Text(L10n.cancel) } },

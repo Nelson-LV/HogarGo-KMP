@@ -1,5 +1,8 @@
 package com.hogargo.kmp.household.ui
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -53,20 +56,35 @@ import com.hogargo.kmp.household.data.HouseholdCode
 import com.hogargo.kmp.household.data.RecoveryUser
 import com.hogargo.kmp.l10n.L10n
 
-/** Paleta de HogarGo (la misma de la app iOS). */
+/**
+ * Paleta de HogarGo. En claro es la misma de la app iOS; en oscuro usa su variante.
+ * [isDark] lo fija HogarGoTheme segun el sistema y las pantallas se recomponen solas.
+ */
 object HogarGoColors {
-    val background = Color(0xFFFEF8F5)
-    val surface = Color.White
-    val surfaceContainer = Color(0xFFFCEAE2)
-    val surfaceContainerLow = Color(0xFFFFF1EB)
-    val brandOrange = Color(0xFFFEAC67)
-    val primaryText = Color(0xFF7A3E1D)
-    val secondaryText = Color(0xFF8C7468)
-    val brandOrangeContainer = Color(0xFFFFDBC9)
-    val brandOrangeDeep = Color(0xFF974400)
-    val borderSubtle = Color(0xFFEBDCD4)
-    val success = Color(0xFF558B2F)
-    val alertRed = Color(0xFFBA1A1A)
+    var isDark by mutableStateOf(false)
+
+    private fun pick(light: Long, dark: Long) = Color(if (isDark) dark else light)
+
+    val background get() = pick(0xFFFEF8F5, 0xFF19120E)
+    val surface get() = pick(0xFFFFFFFF, 0xFF251C17)
+    val surfaceContainer get() = pick(0xFFFCEAE2, 0xFF32261F)
+    val surfaceContainerLow get() = pick(0xFFFFF1EB, 0xFF2C211B)
+    val brandOrange get() = pick(0xFFFEAC67, 0xFFFEAC67)
+    val primaryText get() = pick(0xFF7A3E1D, 0xFFFFDBC9)
+    val secondaryText get() = pick(0xFF8C7468, 0xFFC9AFA2)
+    val brandOrangeContainer get() = pick(0xFFFFDBC9, 0xFF5A3319)
+
+    /** Naranja de relleno (botones, bordes): admite texto blanco encima. */
+    val brandOrangeDeep get() = pick(0xFF974400, 0xFFB65A14)
+
+    /** Naranja para textos e iconos sobre fondos o tarjetas. */
+    val accentText get() = pick(0xFF974400, 0xFFFFB27A)
+
+    /** Texto sobre [brandOrange], que es claro en ambos modos. */
+    val onBrandOrange get() = pick(0xFF7A3E1D, 0xFF4A2308)
+    val borderSubtle get() = pick(0xFFEBDCD4, 0xFF4D3C32)
+    val success get() = pick(0xFF558B2F, 0xFF9CCC65)
+    val alertRed get() = pick(0xFFBA1A1A, 0xFFD9493F)
 }
 
 /** Tipo de teclado para los campos de los formularios de hogar. */
@@ -176,7 +194,7 @@ fun HouseholdCodeBadge(code: String, onCopied: () -> Unit) {
             clipboard.setText(AnnotatedString(HouseholdCode.format(code)))
             onCopied()
         }) {
-            Text("⧉ " + L10n.copy, color = HogarGoColors.brandOrangeDeep, fontWeight = FontWeight.SemiBold)
+            Text("⧉ " + L10n.copy, color = HogarGoColors.accentText, fontWeight = FontWeight.SemiBold)
         }
     }
 }

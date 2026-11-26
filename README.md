@@ -68,6 +68,10 @@ Implementación multiplataforma del módulo de gestión de tareas del hogar, mot
   - Soporte de modo sin conexión / fallback automático con banco de consejos locales de convivencia y trabajo en equipo.
   - Pruebas unitarias con `MockEngine` (`DailyAdviceRepositoryTest`).
 
+## Modo oscuro
+
+La app sigue el modo claro u oscuro del sistema en ambas plataformas: `HogarGoTheme` elige el esquema de Material y la paleta `HogarGoColors` cambia con el. Usa esos colores (no valores fijos) para que las pantallas nuevas se vean bien en los dos modos.
+
 ## Ejecutar
 
 **Android** (JDK 17 + Android SDK):

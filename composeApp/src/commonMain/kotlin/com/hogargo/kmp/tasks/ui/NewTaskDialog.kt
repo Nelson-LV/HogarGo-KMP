@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -217,7 +218,7 @@ fun NewTaskDialog(
                     }
                 },
                 enabled = title.isNotBlank(),
-                colors = ButtonDefaults.buttonColors(containerColor = HogarGoColors.brandOrangeDeep),
+                colors = ButtonDefaults.buttonColors(containerColor = HogarGoColors.brandOrangeDeep, contentColor = Color.White),
             ) {
                 Text("Guardar Tarea")
             }

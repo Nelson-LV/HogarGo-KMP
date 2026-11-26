@@ -17,7 +17,6 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hogargo.kmp.data.DatabaseDriverFactory
@@ -75,7 +74,7 @@ fun App(driverFactory: DatabaseDriverFactory, notifier: HouseholdNotifier) {
                     .imePadding()
                     .padding(bottom = 88.dp),
             ) { data ->
-                Snackbar(data, containerColor = HogarGoColors.primaryText.copy(alpha = 0.92f), contentColor = Color.White)
+                Snackbar(data, containerColor = HogarGoColors.primaryText.copy(alpha = 0.92f), contentColor = HogarGoColors.background)
             }
         }
     }

@@ -141,7 +141,7 @@ fun HomeScreen(
                     Icon(
                         imageVector = Icons.Filled.LocalFireDepartment,
                         contentDescription = null,
-                        tint = HogarGoColors.brandOrangeDeep,
+                        tint = HogarGoColors.accentText,
                         modifier = Modifier.size(20.dp),
                     )
                 }
@@ -267,7 +267,7 @@ fun HomeScreen(
                             CircularProgressIndicator(
                                 modifier = Modifier.size(16.dp),
                                 strokeWidth = 2.dp,
-                                color = HogarGoColors.brandOrangeDeep,
+                                color = HogarGoColors.accentText,
                             )
                             Text(
                                 text = L10n.tr("Obteniendo consejo...", "Fetching advice..."),
@@ -405,14 +405,14 @@ fun HomeScreen(
                             "${FinanceRules.formatMoney(goal.currentAmount)} / ${FinanceRules.formatMoney(goal.targetAmount)}",
                             fontSize = 12.sp,
                             fontWeight = FontWeight.SemiBold,
-                            color = HogarGoColors.brandOrangeDeep,
+                            color = HogarGoColors.accentText,
                         )
                     }
                     val progress = (goal.currentAmount / goal.targetAmount).toFloat().coerceIn(0f, 1f)
                     LinearProgressIndicator(
                         progress = { progress },
                         modifier = Modifier.fillMaxWidth().height(6.dp).clip(RoundedCornerShape(3.dp)),
-                        color = HogarGoColors.brandOrangeDeep,
+                        color = HogarGoColors.accentText,
                         trackColor = HogarGoColors.brandOrangeContainer,
                     )
                 }
@@ -504,7 +504,7 @@ fun HomeScreen(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFFFFDBC9)),
+                                .background(HogarGoColors.brandOrangeContainer),
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
@@ -552,7 +552,7 @@ fun HomeScreen(
                             modifier = Modifier
                                 .size(40.dp)
                                 .clip(CircleShape)
-                                .background(Color(0xFFFFDBC9)),
+                                .background(HogarGoColors.brandOrangeContainer),
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
@@ -608,7 +608,7 @@ private fun QuickActionCard(
                 modifier = Modifier
                     .size(46.dp)
                     .clip(CircleShape)
-                    .background(Color(0xFFFFDBC9)),
+                    .background(HogarGoColors.brandOrangeContainer),
                 contentAlignment = Alignment.Center,
             ) {
                 Icon(
