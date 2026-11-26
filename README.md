@@ -50,6 +50,24 @@ Port a KMP de las tres pantallas de HogarGo Android/iOS, con las mismas reglas. 
 
 Nota: las monedas de Zori y las "tareas completadas" del calendario se leen de la tabla `HouseholdTask` (`Task.sq`). Aun no hay pantalla de tareas que la llene, asi que hasta entonces las monedas valen 0.
 
+## Tareas, Racha Diaria y Consejo del Día (módulo de Jhonatan Palacios)
+
+Implementación multiplataforma del módulo de gestión de tareas del hogar, motivación y buenos hábitos familiares (`tasks/` y `advice/` en `commonMain`):
+
+- **Tareas del Hogar (`Tasks.sq`, `TaskRepository`)**:
+  - Tabla `Task`: `id`, `householdId`, `title`, `category`, `assignedMemberId`, `assignedMemberName`, `assignedToOther`, `coinReward`, `dueDate`, `dueTime`, `isCompleted`, `completedAt`, `createdAt`.
+  - Consultas reactivas en tiempo real: filtrado por todas, pendientes, hechas, contador y eliminación individual/por hogar.
+- **Racha y Recompensas (`TaskViewModel`)**:
+  - Cálculo de racha de tareas completadas del hogar y acumulación de monedas ganadas (🪙).
+  - Integrado con la mascota Zori para el canje de recompensas y el progreso del equipo.
+- **Recordatorio de Racha antes de las 8:00 PM**:
+  - Programación de notificaciones locales recurrentes (`AlarmManager` en Android con `StreakReminderReceiver`, `UNCalendarNotificationTrigger` en iOS).
+  - Alerta interactiva en `HomeScreen` y `TasksScreen` con conteo de tareas pendientes del día.
+- **Consejo del Día (`advice/` con Ktor KMP)**:
+  - Consumo HTTP asíncrono multiplataforma de `https://api.adviceslip.com/advice` (OkHttp en Android, Darwin en iOS).
+  - Soporte de modo sin conexión / fallback automático con banco de consejos locales de convivencia y trabajo en equipo.
+  - Pruebas unitarias con `MockEngine` (`DailyAdviceRepositoryTest`).
+
 ## Ejecutar
 
 **Android** (JDK 17 + Android SDK):
@@ -71,9 +89,9 @@ Luego ejecutar el esquema `iosApp` en un simulador.
 ## Flujo de trabajo
 
 `main` contiene la base compartida. Cada integrante trabaja en su propia rama (`nombre-apellido`) y abre PR hacia `main`.
-Las pantallas Finanzas, Mascotas y Calendario son esqueletos con un contador persistido para validar SQLDelight; se reemplazan en cada rama.
 
-## Creditos
+## Créditos
 
-- Nelson Lopez Vidales
-- (agregar integrantes)
+- Jhonatan Palacios Gómez — Módulo de Tareas, Racha Diaria y Consejo del Día
+- Nelson Rodrigo López Vidales — Finanzas, Mascota y Calendario
+- Dana Isabella Romero Núñez — Módulo de Hogares y Sesión

@@ -33,9 +33,10 @@ fun AboutScreen(onBack: () -> Unit) = ScreenColumn {
         style = MaterialTheme.typography.bodyMedium,
     )
     Spacer(Modifier.height(16.dp))
-    Text("Creditos", style = MaterialTheme.typography.titleMedium)
-    Text("Nelson Lopez Vidales")
-    Text("(agregar nombres completos del equipo)")
+    Text("Créditos", style = MaterialTheme.typography.titleMedium)
+    Text("• Jhonatan Palacios Gómez — Módulo de Tareas, Racha Diaria y Consejo del Día")
+    Text("• Nelson Rodrigo López Vidales — Finanzas, Mascota y Calendario")
+    Text("• Dana Isabella Romero Núñez — Módulo de Hogares y Sesión")
     Spacer(Modifier.height(24.dp))
     OutlinedButton(onClick = onBack) { Text("Volver") }
 }
