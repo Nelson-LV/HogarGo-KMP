@@ -7,7 +7,8 @@ androidx-activity = "1.10.1"
 jetbrains-lifecycle = "2.9.4"
 jetbrains-navigation = "2.9.1"
 coroutines = "1.10.2"
-kotlinx-datetime = "0.7.1"
+# Compose 1.9 (DatePicker en iOS) usa kotlinx.datetime.Instant: con la 0.7.x normal el selector de fecha cierra la app en iOS
+kotlinx-datetime = "0.7.1-0.6.x-compat"
 ktor = "3.1.1"
 kotlinx-serialization = "1.8.0"
 
