@@ -83,12 +83,10 @@ La app sigue el modo claro u oscuro del sistema en ambas plataformas: `HogarGoTh
 **iOS** (requiere macOS con Xcode):
 
 ```
-brew install xcodegen
-cd iosApp && xcodegen
-open iosApp.xcodeproj
+open iosApp/iosApp.xcodeproj
 ```
 
-Luego ejecutar el esquema `iosApp` en un simulador.
+Luego ejecutar el esquema `iosApp` en un simulador. La Mac necesita JDK 17 y el SDK de Android (Gradle configura ambos modulos) y el simulador solo funciona en Mac con chip Apple. Para un iPhone fisico elige tu equipo en *Signing & Capabilities*. `iosApp/project.yml` queda como alternativa si prefieres regenerar el proyecto con XcodeGen.
 
 ## Flujo de trabajo
 
